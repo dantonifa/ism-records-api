@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/lib/db";
-import Record from "@/models/record";
+import { dbConnect } from "../../../lib/db";
+import Record from "../../../models/record";
 
 // Método GET para consultar todos los registros académicos
 export async function GET(request) {
