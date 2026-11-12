@@ -16,6 +16,47 @@
     }
   ],
   "paths": {
+    "/api/grades/submit": {
+      "post": {
+        "summary": "Submit grades for secretary review",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["teacherId", "subjectId", "courseSection"],
+                "properties": {
+                  "teacherId": { "type": "string", "description": "Teacher MongoDB ObjectId" },
+                  "subjectId": { "type": "string" },
+                  "courseSection": { "type": "string" },
+                  "term": { "type": "string" },
+                  "grades": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["studentId", "score"],
+                      "properties": {
+                        "studentId": { "type": "string" },
+                        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+                        "comments": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Submission created with PENDING_REVIEW status" },
+          "400": { "description": "Invalid JSON or submission" },
+          "500": { "description": "Submission could not be saved" }
+        }
+      }
+    },
     "/teachers": {
       "get": {
         "summary": "Get all teacher profiles",
