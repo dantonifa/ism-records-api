@@ -15,6 +15,7 @@ pnpm-debug.log*
 Thumbs.db
 
 # Build output (if you ever use bundlers)
+.next/
 dist/
 build/
 
