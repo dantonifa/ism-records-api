@@ -2,7 +2,11 @@ export default function HomePage() {
   return (
         <>
     <header>
-      <img src="images/ism-logo.webp" alt="Instituto Privado Salvador Moncada Logo" />
+        <img 
+            src="/images/ism-logo.webp" 
+            alt="Instituto Privado Salvador Moncada Logo" 
+            style={{ height: "70px", width: "auto", objectFit: "contain" }}
+        />
         <h1>
            INSTITUTO PRIVADO SALVADOR MONCADA
         </h1>
