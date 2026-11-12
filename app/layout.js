@@ -1,5 +1,5 @@
-import "../styles/project-large.css";
-import "../styles/project-mobile.css";
+import "../public/styles/project-large.css";
+import "../public/styles/project-mobile.css";
 
 export const metadata = {
   title: "Instituto Privado Salvador Moncada",
