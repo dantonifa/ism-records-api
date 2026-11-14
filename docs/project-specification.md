@@ -76,8 +76,8 @@ The initial release focuses on account access, role-based permissions, student a
 - **Framework:** Next.js App Router.
 - **Language:** TypeScript in strict mode.
 - **Styling:** Tailwind CSS with a consistent, responsive design for desktop and mobile.
-- **Data:** PostgreSQL, MongoDB, or Supabase; the team will confirm the database.
-- **Authentication:** Auth.js v5 (NextAuth.js) or Clerk for sign-in and session management; the team will confirm the provider.
+- **Data:** MongoDB with Mongoose; this is the team's selected database solution.
+- **Authentication:** Auth.js v5 (NextAuth.js), Clerk, or a team-approved custom solution; the provider remains to be confirmed.
 - **Authorization:** Server-side role checks and input validation for protected records and API requests. Specific role permissions and account approval procedures require team confirmation.
 - **Views:** Sign-in and account management, student records, courses and enrollments, and grades and academic history.
 - **Components:** At least five reusable components across multiple pages, such as navigation, form fields, data tables, search filters, and feedback messages.
