@@ -358,11 +358,9 @@ checklist.
 - **Local setup screenshot:** [ScreenshotHost300011-13.png](../ScreenshotHost300011-13.png)
 - **Data model diagram:** [`project-diagram.svg`](./project-diagram.svg)
 - **Project specification:** [`project-specification.md`](./project-specification.md)
-- **Code review PR:** Add the URL of the pull request where your assigned
-  teammate's Week 03 code review comments were submitted.
+- **Code review PR:** [Obiri12/sacrament-meetings#1](https://github.com/Obiri12/sacrament-meetings/pull/1)
 
 Before submitting in Canvas, confirm that the repository README lists all team
-members and replace the code-review placeholder with the actual pull-request
-URL. Confirm the next meeting's group leader and the team's exact async
+members. Confirm the next meeting's group leader and the team's exact async
 check-in cadence in Teams if those decisions were made after the recorded
 meeting.
