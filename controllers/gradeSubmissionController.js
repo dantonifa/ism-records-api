@@ -1,5 +1,8 @@
+const GradeSubmission = require("../models/GradeSubmission");
+
 async function submitGradeSubmission(submission) {
-  return submission.save();
+  const record = new GradeSubmission(submission);
+  return record.save();
 }
 
 module.exports = { submitGradeSubmission };

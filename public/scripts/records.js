@@ -2,156 +2,47 @@
 // 1. ASYNCHRONOUS DATABASE FETCH UTILITIES (GLOBAL SCOPE)
 // ==========================================================================
 
-// Helper function to fetch and display a single record by its business ID
-async function loadSingleRecord(studentId) {
-  const resultDisplay = document.getElementById("search-result-display");
-  if (!resultDisplay) return;
-
-  if (!studentId.trim()) {
-    resultDisplay.innerHTML = "";
-    const errorMsg = document.createElement("p");
-    errorMsg.className = "status-message status-error";
-    errorMsg.textContent = "Please enter a valid student ID.";
-    resultDisplay.appendChild(errorMsg);
-    return;
-  }
+// Helper function to fetch and display all student academic records
+async function loadRecords() {
+  const container = document.getElementById("records-container");
+  if (!container) return;
 
   try {
-    resultDisplay.innerHTML = "";
-    const loadingMsg = document.createElement("p");
-    loadingMsg.className = "status-message status-sending";
-    loadingMsg.textContent = "Searching database...";
-    resultDisplay.appendChild(loadingMsg);
-
-    const response = await fetch(`/records/${studentId}`);
-    resultDisplay.innerHTML = "";
-
+    const response = await fetch("/api/records");
     if (!response.ok) {
-      const errorMsg = document.createElement("p");
-      errorMsg.className = "status-message status-error";
-      errorMsg.textContent =
-        response.status === 404
-          ? `No student record found with ID: ${studentId}`
-          : "Failed to retrieve record.";
-      resultDisplay.appendChild(errorMsg);
-      return;
+      throw new Error(`HTTP ${response.status}`);
     }
 
-    const student = await response.json();
-
-    // Create a beautifully structured dashboard card using clean DOM generation
-    const card = document.createElement("div");
-    card.className = "record-card";
-
-    // 1. Header Section (Name and unique business ID)
-    const headerBlock = document.createElement("div");
-    headerBlock.className = "card-header-block";
-
-    const titleName = document.createElement("h2");
-    titleName.className = "card-student-name";
-    titleName.textContent = student.name;
-    headerBlock.appendChild(titleName);
-
-    const subId = document.createElement("p");
-    subId.className = "card-student-id";
-    subId.textContent = `📋 Student ID: ${student.studentId}`;
-    headerBlock.appendChild(subId);
-    card.appendChild(headerBlock);
-
-    // 2. Metadata Grid (Course, Year, Grado, and Sección info labels)
-    const metaGrid = document.createElement("div");
-    metaGrid.className = "card-meta-grid";
-
-    const metaConfigs = [
-      { label: "Course", value: student.course },
-      { label: "Grado", value: student.grado ?? "N/A" },
-      { label: "Sección", value: student.seccion ?? "N/A" },
-      { label: "Año", value: student.year ?? "N/A" },
-    ];
-
-    metaConfigs.forEach((meta) => {
-      const item = document.createElement("div");
-      item.className = "meta-item";
-      item.innerHTML = `<strong>${meta.label}:</strong> ${meta.value}`;
-      metaGrid.appendChild(item);
-    });
-    card.appendChild(metaGrid);
-
-    // 3. Academic Performance Grid Table (P1 - P4 layout rows)
-    const gradesTable = document.createElement("table");
-    gradesTable.className = "card-grades-table";
-
-    const thead = document.createElement("thead");
-    const trHead = document.createElement("tr");
-    ["P1", "P2", "P3", "P4"].forEach((period) => {
-      const th = document.createElement("th");
-      th.textContent = period;
-      trHead.appendChild(th);
-    });
-    thead.appendChild(trHead);
-    gradesTable.appendChild(thead);
-
-    const tbody = document.createElement("tbody");
-    const trBody = document.createElement("tr");
-    const g = student.grades || {};
-    [g.parcial1, g.parcial2, g.parcial3, g.parcial4].forEach((gradeVal) => {
-      const td = document.createElement("td");
-      td.textContent = gradeVal ?? 0;
-      trBody.appendChild(td);
-    });
-    tbody.appendChild(trBody);
-    gradesTable.appendChild(tbody);
-    card.appendChild(gradesTable);
-
-    resultDisplay.appendChild(card);
-  } catch (err) {
-    console.error("Error loading single record:", err);
-    resultDisplay.innerHTML = "";
-    const systemError = document.createElement("p");
-    systemError.className = "status-message status-error";
-    systemError.textContent =
-      "Failed to retrieve record due to a connection error.";
-    resultDisplay.appendChild(systemError);
-  }
-}
-
-// Global fallback tool to list all records if needed
-async function loadRecords() {
-  try {
-    const response = await fetch("/records");
-    const records = await response.json();
-    const container = document.getElementById("records-container");
-    if (!container) return;
+    const payload = await response.json();
+    const records = Array.isArray(payload) ? payload : payload.data || [];
 
     container.innerHTML = "";
 
-    // Recorremos la colección completa de estudiantes registrados en MongoDB
     records.forEach((r) => {
-      // Create a beautifully structured dashboard card using clean DOM generation
       const card = document.createElement("div");
       card.className = "record-card";
 
-      // 1. Header Section (Name and unique business ID)
+      // 1. Header Section
       const headerBlock = document.createElement("div");
       headerBlock.className = "card-header-block";
 
       const titleName = document.createElement("h2");
       titleName.className = "card-student-name";
-      titleName.textContent = r.name;
+      titleName.textContent = r.name ?? "Unnamed Student";
       headerBlock.appendChild(titleName);
 
       const subId = document.createElement("p");
       subId.className = "card-student-id";
-      subId.textContent = `📋 Student ID: ${r.studentId}`;
+      subId.textContent = `📋 Student ID: ${r.studentId ?? "N/A"}`;
       headerBlock.appendChild(subId);
       card.appendChild(headerBlock);
 
-      // 2. Metadata Grid (Course, Year, Grado, and Sección info labels)
+      // 2. Metadata Grid
       const metaGrid = document.createElement("div");
       metaGrid.className = "card-meta-grid";
 
       const metaConfigs = [
-        { label: "Course", value: r.course },
+        { label: "Course", value: r.course ?? "N/A" },
         { label: "Grado", value: r.grado ?? "N/A" },
         { label: "Sección", value: r.seccion ?? "N/A" },
         { label: "Año", value: r.year ?? "N/A" },
@@ -160,12 +51,17 @@ async function loadRecords() {
       metaConfigs.forEach((meta) => {
         const item = document.createElement("div");
         item.className = "meta-item";
-        item.innerHTML = `<strong>${meta.label}:</strong> ${meta.value}`;
+
+        const strong = document.createElement("strong");
+        strong.textContent = `${meta.label}: `;
+        item.appendChild(strong);
+        item.appendChild(document.createTextNode(String(meta.value)));
+
         metaGrid.appendChild(item);
       });
       card.appendChild(metaGrid);
 
-      // 3. Academic Performance Grid Table (P1 - P4 layout rows)
+      // 3. Academic Performance Grid Table (P1 - P4)
       const gradesTable = document.createElement("table");
       gradesTable.className = "card-grades-table";
 
@@ -191,14 +87,13 @@ async function loadRecords() {
       gradesTable.appendChild(tbody);
       card.appendChild(gradesTable);
 
-      // Mount the fully constructed card tree inside the global responsive viewport wrapper
       container.appendChild(card);
     });
   } catch (err) {
     console.error("Error loading records catalog:", err);
+    container.innerHTML = `<p class="status-message status-error">❌ Failed to load records.</p>`;
   }
 }
-
 // ==========================================================================
 // 2. LIFECYCLE INITIALIZATION AND EVENT LISTENERS
 // ==========================================================================
@@ -596,36 +491,41 @@ function renderControlForm(action, displayTarget) {
 async function submitNewRecord() {
   const messageTarget = document.getElementById("create-message");
   if (!messageTarget) return;
+
   const studentData = {
     studentId: document.getElementById("create-studentId").value.trim(),
     name: document.getElementById("create-name").value.trim(),
     course: document.getElementById("create-course").value.trim(),
     grado: document.getElementById("create-grado").value.trim(),
     seccion: document.getElementById("create-seccion").value.trim(),
-    year: parseInt(document.getElementById("create-year").value) || 0,
+    year: parseInt(document.getElementById("create-year").value, 10) || 0,
     grades: {
-      parcial1: parseInt(document.getElementById("create-p1").value) || 0,
-      parcial2: parseInt(document.getElementById("create-p2").value) || 0,
-      parcial3: parseInt(document.getElementById("create-p3").value) || 0,
-      parcial4: parseInt(document.getElementById("create-p4").value) || 0,
+      parcial1: parseInt(document.getElementById("create-p1").value, 10) || 0,
+      parcial2: parseInt(document.getElementById("create-p2").value, 10) || 0,
+      parcial3: parseInt(document.getElementById("create-p3").value, 10) || 0,
+      parcial4: parseInt(document.getElementById("create-p4").value, 10) || 0,
     },
   };
+
   try {
     messageTarget.className = "status-message status-sending";
     messageTarget.textContent = "Sending record to database...";
-    const response = await fetch("/records", {
+
+    const response = await fetch("/api/records", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(studentData),
     });
     const result = await response.json();
+
     if (response.ok) {
       messageTarget.className = "status-message status-success";
-      messageTarget.textContent = `✨ ${result.message}`;
+      messageTarget.textContent = `✨ ${result.message || "Student record created successfully."}`;
       document.getElementById("create-student-form").reset();
+      if (typeof loadRecords === "function") loadRecords();
     } else {
       messageTarget.className = "status-message status-error";
-      messageTarget.textContent = `❌ Error: ${result.message || "Failed to create record."}`;
+      messageTarget.textContent = `❌ Error: ${result.message || result.error || "Failed to create record."}`;
     }
   } catch (err) {
     console.error(err);
@@ -633,26 +533,36 @@ async function submitNewRecord() {
     messageTarget.textContent = "❌ Connection failed. Check server status.";
   }
 }
+
 async function fetchStudentForUpdate(studentId) {
   const messageTarget = document.getElementById("update-message");
   const updateForm = document.getElementById("update-student-form");
   if (!messageTarget || !updateForm) return;
+
   if (!studentId) {
     messageTarget.className = "status-message status-error";
     messageTarget.textContent = "Please provide an ID first.";
     return;
   }
+
   try {
     messageTarget.className = "status-message status-sending";
     messageTarget.textContent = "Searching for student profile...";
-    const response = await fetch(`/records/${studentId}`);
-    if (!response.ok)
+
+    const response = await fetch(
+      `/api/records/${encodeURIComponent(studentId)}`,
+    );
+    if (!response.ok) {
       throw new Error(
         response.status === 404
           ? "Student profile not found."
           : "Server error.",
       );
-    const student = await response.json();
+    }
+
+    const payload = await response.json();
+    const student = payload.data ?? payload;
+
     document.getElementById("update-name").value = student.name || "";
     document.getElementById("update-course").value = student.course || "";
     document.getElementById("update-grado").value = student.grado || "";
@@ -662,6 +572,7 @@ async function fetchStudentForUpdate(studentId) {
     document.getElementById("update-p2").value = student.grades?.parcial2 ?? 0;
     document.getElementById("update-p3").value = student.grades?.parcial3 ?? 0;
     document.getElementById("update-p4").value = student.grades?.parcial4 ?? 0;
+
     updateForm.style.display = "block";
     messageTarget.textContent = "";
   } catch (err) {
@@ -670,37 +581,46 @@ async function fetchStudentForUpdate(studentId) {
     messageTarget.textContent = `❌ ${err.message}`;
   }
 }
+
 async function submitUpdatedRecord(studentId) {
   const messageTarget = document.getElementById("update-message");
   if (!messageTarget) return;
+
   const updatedData = {
     name: document.getElementById("update-name").value.trim(),
     course: document.getElementById("update-course").value.trim(),
     grado: document.getElementById("update-grado").value.trim(),
     seccion: document.getElementById("update-seccion").value.trim(),
-    year: parseInt(document.getElementById("update-year").value) || 0,
+    year: parseInt(document.getElementById("update-year").value, 10) || 0,
     grades: {
-      parcial1: parseInt(document.getElementById("update-p1").value) || 0,
-      parcial2: parseInt(document.getElementById("update-p2").value) || 0,
-      parcial3: parseInt(document.getElementById("update-p3").value) || 0,
-      parcial4: parseInt(document.getElementById("update-p4").value) || 0,
+      parcial1: parseInt(document.getElementById("update-p1").value, 10) || 0,
+      parcial2: parseInt(document.getElementById("update-p2").value, 10) || 0,
+      parcial3: parseInt(document.getElementById("update-p3").value, 10) || 0,
+      parcial4: parseInt(document.getElementById("update-p4").value, 10) || 0,
     },
   };
+
   try {
     messageTarget.className = "status-message status-sending";
     messageTarget.textContent = "Updating database records...";
-    const response = await fetch(`/records/${studentId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
-    });
+
+    const response = await fetch(
+      `/api/records/${encodeURIComponent(studentId)}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      },
+    );
     const result = await response.json();
+
     if (response.ok) {
       messageTarget.className = "status-message status-success";
-      messageTarget.textContent = `✨ ${result.message}`;
+      messageTarget.textContent = `✨ ${result.message || "Student record updated successfully."}`;
+      if (typeof loadRecords === "function") loadRecords();
     } else {
       messageTarget.className = "status-message status-error";
-      messageTarget.textContent = `❌ Error: ${result.message || "Failed updating document."}`;
+      messageTarget.textContent = `❌ Error: ${result.message || result.error || "Failed updating document."}`;
     }
   } catch (err) {
     console.error(err);
@@ -708,58 +628,86 @@ async function submitUpdatedRecord(studentId) {
     messageTarget.textContent = "❌ Connection failed. Check server status.";
   }
 }
+
 async function verifyStudentForDelete(studentId) {
   const messageTarget = document.getElementById("delete-message");
   const confirmBox = document.getElementById("delete-confirmation-box");
   const warningText = document.getElementById("delete-warning-text");
   if (!messageTarget || !confirmBox || !warningText) return;
+
   if (!studentId) {
     messageTarget.className = "status-message status-error";
     messageTarget.textContent = "Please provide an ID first.";
     return;
   }
+
   try {
     messageTarget.className = "status-message status-sending";
     messageTarget.textContent = "Checking profile existence...";
-    const response = await fetch(`/records/${studentId}`);
-    if (!response.ok)
+
+    const response = await fetch(
+      `/api/records/${encodeURIComponent(studentId)}`,
+    );
+    if (!response.ok) {
       throw new Error(
         response.status === 404
           ? "Student profile not found."
           : "Server error.",
       );
-    const student = await response.json();
-    warningText.innerHTML =
-      "Are you sure you want to permanently delete the academic file of " +
-      student.name +
-      "? This action cannot be undone.";
+    }
+
+    const payload = await response.json();
+    const student = payload.data ?? payload;
+
+    warningText.textContent = `Are you sure you want to permanently delete the academic file of ${student.name}? This action cannot be undone.`;
     confirmBox.style.display = "block";
     messageTarget.textContent = "";
   } catch (err) {
     confirmBox.style.display = "none";
     messageTarget.className = "status-message status-error";
-    messageTarget.textContent = "❌ " + err.message;
+    messageTarget.textContent = `❌ ${err.message}`;
   }
 }
 async function submitDeletedRecord(studentId) {
   const messageTarget = document.getElementById("delete-message");
   const confirmBox = document.getElementById("delete-confirmation-box");
   if (!messageTarget || !confirmBox) return;
+
+  if (!studentId) {
+    messageTarget.className = "status-message status-error";
+    messageTarget.textContent = "❌ Error: Missing student ID for deletion.";
+    return;
+  }
+
   try {
     messageTarget.className = "status-message status-sending";
     messageTarget.textContent = "Removing file from database...";
-    const response = await fetch("/records/" + studentId, { method: "DELETE" });
+
+    const response = await fetch(
+      `/api/records/${encodeURIComponent(studentId)}`,
+      {
+        method: "DELETE",
+      },
+    );
     const result = await response.json();
+
     if (response.ok) {
       messageTarget.className = "status-message status-success";
-      messageTarget.textContent = "✨ " + result.message;
+      messageTarget.textContent =
+        "✨ " + (result.message || "Student record deleted successfully.");
       confirmBox.style.display = "none";
+
       const idInput = document.getElementById("delete-search-id");
       if (idInput) idInput.value = "";
+
+      if (typeof loadRecords === "function") {
+        loadRecords();
+      }
     } else {
       messageTarget.className = "status-message status-error";
       messageTarget.textContent =
-        "❌ Error: " + (result.message || "Failed removing document.");
+        "❌ Error: " +
+        (result.message || result.error || "Failed removing document.");
     }
   } catch (err) {
     console.error(err);
