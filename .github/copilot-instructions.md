@@ -3,7 +3,7 @@
 ## Project
 
 - This repository contains a school website and student records application for Instituto Privado Salvador Moncada.
-- The current development command runs Next.js with React and JavaScript. MongoDB access uses Mongoose.
+- The current Next.js app uses React and JavaScript. TypeScript is installed, but the existing app has not yet been converted. WDD 430 requires TypeScript typing; coordinate the transition with the team rather than assuming it is complete. MongoDB access uses Mongoose.
 - Treat the existing Express server and `public/` static site as separate existing code; do not assume they run when using `npm run dev`.
 
 ## Structure
