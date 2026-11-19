@@ -3,7 +3,7 @@ import { dbConnect } from "../../../lib/db";
 import Record from "../../../models/record";
 
 // Método GET para consultar todos los registros académicos
-export async function GET(request) {
+export async function GET() {
   try {
     await dbConnect();
     const records = await Record.find({});
@@ -36,6 +36,7 @@ export async function POST(request) {
     return NextResponse.json(
       {
         success: true,
+        message: "Academic record profile stored successfully.",
         data: newRecord,
       },
       { status: 201 },
