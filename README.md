@@ -22,6 +22,13 @@ Christina Dobbins
 
 Database-backed features need a MongoDB connection. The Next.js database helper reads `MONGODB_URI` from the environment and otherwise uses a local MongoDB instance. Obtain connection details securely from a teammate; never commit credentials.
 
+## Secretary grade review
+
+These routes return `503` until a server-side Secretary/Page Administrator role check from [#10](https://github.com/dantonifa/ism-records-api/issues/10) is wired into both handlers. Do not use a client-supplied role. Grade review requires MongoDB transaction support (a replica set or sharded cluster).
+
+- `PUT /api/secretary/grades/:submissionId/approve` takes `{ "year": 2026 }`. The pending roster's `Q1`–`Q4` term selects `parcial1`–`parcial4`. Each student must match exactly one existing record by student ID, subject (the record's `course`), section, and year. If any match is missing or ambiguous, no grades are saved.
+- `PUT /api/secretary/grades/:submissionId/reject` takes `{ "rejectionReason": "Please verify the roster." }`. It saves the reason and marks the pending submission `REJECTED` without changing student records.
+
 ## Project planning
 
 The team still needs to confirm the project specifications, MVP scope, architecture, design, ownership, and project board. The repository-wide Copilot instructions are in [`.github/copilot-instructions.md`](.github/copilot-instructions.md).
