@@ -25,7 +25,7 @@ export async function GET() {
   }
 }
 
-// Método POST para registrar un nuevo estudiante con sus notas
+// POST method to register a new student along with their grades
 export async function POST(request) {
   try {
     await dbConnect();
