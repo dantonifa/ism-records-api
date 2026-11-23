@@ -14,7 +14,8 @@ behavior.
 ## Technology decisions
 
 - The target application uses Next.js App Router, React, and TypeScript in
-  strict mode.
+  strict mode. The current development command still runs Next.js with React
+  and JavaScript in places; preserve the language of the file being changed.
 - Use Tailwind CSS for responsive styling and preserve the existing visual
   language unless a design decision has been documented.
 - MongoDB is the team database decision. Use Mongoose for schemas and database
@@ -29,7 +30,20 @@ behavior.
 The repository currently contains both Next.js App Router code and an existing
 Express/Mongoose API. Preserve the behavior of the area being changed and
 follow its established entry point. Do not migrate unrelated code as part of a
-feature.
+feature. Treat the Express server and `public/` static site as separate
+existing code; do not assume they run when using `npm run dev`.
+
+## Repository structure
+
+- `app/` contains the Next.js layout, pages, and API route handlers.
+- `models/` contains Mongoose models (records, teachers, grade submissions,
+  and related entities).
+- `lib/db.js` provides the Next.js MongoDB connection; `controllers/` and
+  `middleware/` contain shared grade-submission logic.
+- `public/` contains static pages, assets, scripts, and styles. `server.js`,
+  `routes/`, and `config/` support the older Express server.
+- `tests/` contains Node.js tests for grade submissions.
+- `docs/` contains the project specification and team meeting notes.
 
 ## Domain model
 
@@ -62,11 +76,21 @@ boundary.
   reloads. Read configuration from environment variables.
 - Keep secrets in local environment files that are excluded from source
   control. Do not print connection strings, passwords, or tokens in logs.
+- Student records and grades are sensitive: avoid exposing real data in
+  examples, logs, tests, or public responses.
 - Use loading, empty, validation, and error states in the UI.
 - Prefer reusable components for navigation, form fields, data tables, search
   filters, and feedback messages.
 - Keep changes focused. Follow existing naming, formatting, and module
-  conventions in the directory being changed.
+  conventions in the directory being changed. Add focused tests for new or
+  changed behavior.
+
+## Local commands
+
+- Run `npm install` after cloning.
+- Run `npm run dev` for local Next.js development.
+- Run `npm run build` to check a production build.
+- Run existing tests with `node --test`.
 
 ## Team ownership
 

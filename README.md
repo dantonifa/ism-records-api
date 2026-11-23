@@ -5,6 +5,9 @@ for administrators, teachers, and staff. The MVP supports secure account
 access, role-based permissions, student profiles, courses, enrollments, grades,
 and academic history.
 
+The repository includes a Next.js app, MongoDB models, and an older Express
+server with static pages under `public/`.
+
 ## Team members
 
 - Abdullahi Bolutife Mohammed
@@ -30,14 +33,17 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. Set `MONGODB_URI` in a local environment file
-before using database-backed features. Do not commit credentials or tokens.
+Open [http://localhost:3000](http://localhost:3000). Set `MONGODB_URI` in a
+local environment file before using database-backed features. The Next.js
+database helper reads `MONGODB_URI` and otherwise uses a local MongoDB
+instance. Do not commit credentials or tokens.
 
 ## Project resources
 
 - [Project specification](docs/project-specification.md)
 - [Week 03 team meeting documentation](docs/week-03-team-meeting.md)
 - [Project diagram](docs/project-diagram.svg)
+- [Copilot instructions](.github/copilot-instructions.md)
 - [GitHub Project Board](https://github.com/users/dantonifa/projects/3)
 - [Week 04 milestone](https://github.com/dantonifa/ism-records-api/milestone/1)
 
