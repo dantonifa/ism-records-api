@@ -9,7 +9,8 @@ Abdullahi
 Emmanuel Bassey  
 David Antonio  
 Obiri Bempa Asiedu  
-Christina Dobbins 
+Christina Dobbins  
+Pascal Okezie  
 
 
 ## Local setup
