@@ -15,6 +15,7 @@ server with static pages under `public/`.
 - David Antonio Fajardo Ponce
 - Obiri Bempa Asiedu
 - Christina Dobbins
+- Pascal Okezie
 
 ## Technology
 
