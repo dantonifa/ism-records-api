@@ -82,7 +82,7 @@ The initial release focuses on account access, role-based permissions, student a
 - **Views:** Sign-in and account management, student records, courses and enrollments, and grades and academic history.
 - **Components:** At least five reusable components across multiple pages, such as navigation, form fields, data tables, search filters, and feedback messages.
 - **Rendering and feedback:** Use server and client components where appropriate, with loading states, validation messages, and error feedback.
-- **Deployment:** Render is proposed for hosting; the team will confirm deployment and database compatibility.
+- **Deployment:** The GitHub-connected Next.js application is currently deployed on Vercel. The team should confirm the production environment and database compatibility.
 
 ## Core API Endpoints
 

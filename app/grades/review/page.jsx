@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function GradeReviewPage() {
   const [submissions, setSubmissions] = useState([]);
@@ -37,7 +38,7 @@ export default function GradeReviewPage() {
 
   return (
     <main>
-      <a href="/">Back to home</a>
+      <Link href="/">Back to home</Link>
       <h1>Pending grades</h1>
       <p role="status">{message}</p>
       {!submissions.length && !message && <p>No pending submissions.</p>}

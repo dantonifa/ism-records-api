@@ -23,7 +23,7 @@ server with static pages under `public/`.
 - TypeScript strict mode for the target application
 - MongoDB with Mongoose
 - Responsive CSS/Tailwind design direction
-- Render as the proposed deployment platform
+- Vercel for the current Next.js deployment
 
 ## Local setup
 
@@ -37,6 +37,14 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000). Set `MONGODB_URI` and
 `AUTH_SECRET` in a local environment file and in the deployment environment.
 Obtain both securely; do not commit credentials or tokens.
+
+## Deployment
+
+The GitHub-connected Next.js app is deployed on Vercel at
+[ism-records-api.vercel.app](https://ism-records-api.vercel.app/). Configure
+`MONGODB_URI` and `AUTH_SECRET` securely in the appropriate Vercel environments.
+The older Express server is separate and references a Render deployment; do not
+assume it shares the Next.js deployment or its access controls.
 
 ## Proposed account permissions
 

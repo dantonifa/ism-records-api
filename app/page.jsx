@@ -1,4 +1,5 @@
 import SignOutButton from "../components/SignOutButton";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -19,7 +20,7 @@ export default function HomePage() {
             <li><a href="./discover.html">DISCOVER</a></li>
             <li><a href="./register.html">REGISTER</a></li>
             <li><a href="records.html">RECORDS</a></li>
-            <li><a href="/students">STUDENTS</a></li>
+            <li><Link href="/students">STUDENTS</Link></li>
             <li><a href="/login">SIGN IN</a></li>
             <li><a href="/signup">REQUEST ACCOUNT</a></li>
             <li><a href="/grades/entry">GRADES</a></li>

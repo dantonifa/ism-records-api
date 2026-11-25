@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function GradeEntryPage() {
@@ -57,7 +58,7 @@ export default function GradeEntryPage() {
   const assignment = assignments.find((item) => item._id === selected);
   return (
     <main className={styles.page}>
-      <a className={styles.backLink} href="/">Back to home</a>
+      <Link className={styles.backLink} href="/">Back to home</Link>
       <div className={styles.card}>
         <div className={styles.brand}>
           <img src="/images/ism-logo.webp" alt="" className={styles.logo} />

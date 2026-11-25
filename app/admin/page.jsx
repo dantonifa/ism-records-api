@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function AdminPage() {
   const [users, setUsers] = useState([]);
@@ -43,7 +44,7 @@ export default function AdminPage() {
 
   return (
     <main>
-      <a href="/">Back to home</a>
+      <Link href="/">Back to home</Link>
       <h1>Administration</h1>
       <p role="status">{message}</p>
       <section>
