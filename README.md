@@ -70,6 +70,12 @@ requires MongoDB transaction support (a replica set or sharded cluster).
 
 - `PUT /api/secretary/grades/:submissionId/approve` takes `{ "year": 2026 }`. The year must match the submission when present. The pending roster's `Q1`–`Q4` term selects `parcial1`–`parcial4`. Each student must match exactly one existing record by student ID, subject (the record's `course`), section, and year. If any match is missing or ambiguous, no grades are saved.
 - `PUT /api/secretary/grades/:submissionId/reject` takes `{ "rejectionReason": "Please verify the roster." }`. It saves the reason and marks the pending submission `REJECTED` without changing student records.
+- `GET /api/secretary/grades` returns up to 100 pending submissions, newest first. Optional `teacherId`, `subjectId`, and `term` query parameters are exact filters and can be combined.
+- `PUT /api/secretary/grades/batch-approve` takes a `year` and 1–50 unique `submissionIds`. Every submission is reviewed in one transaction; if any fails or two target the same grade, none are saved.
+
+The grade-review integration test runs when `GRADE_REVIEW_MONGO_TEST_URI` points
+to an isolated local MongoDB replica set. It creates and removes a uniquely named
+test database; the standard test run skips it when the variable is unset.
 
 ## Project resources
 
