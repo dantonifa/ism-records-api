@@ -63,6 +63,23 @@ page can then approve accounts, link teacher accounts to teacher records, and
 assign classes and students. The legacy Express server is separate and does not
 use these Next.js access controls; do not deploy it with sensitive records.
 
+## Course management
+
+The proposed course module stores a unique code, name, optional description, and
+active or archived status. Codes are trimmed, normalized to uppercase, and
+cannot be changed or reused after archiving. MongoDB must have the model's unique
+code index in place. Course records are not yet linked to enrollments or grade
+assignments.
+
+Approved administrators, staff, and teachers can browse active courses at
+`/courses`; only administrators can create, edit, or archive them.
+
+- `GET /api/courses` lists active courses; `POST /api/courses` creates a course
+  from `code`, `name`, and an optional `description`.
+- `GET /api/courses/:id` reads an active course; `PATCH /api/courses/:id`
+  updates its name or description.
+- `DELETE /api/courses/:id` archives a course rather than deleting its data.
+
 ## Secretary grade review
 
 Only approved staff and administrators can review submissions. Grade review
