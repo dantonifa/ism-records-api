@@ -1,100 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
-import Link from "next/link";
 
 export default function GradeEntryPage() {
-  const [checked, setChecked] = useState(false);
+  const [assignments, setAssignments] = useState([]);
+  const [selected, setSelected] = useState("");
+  const [message, setMessage] = useState("");
 
-  function checkEntry(event) {
+  useEffect(() => {
+    async function load() {
+      try {
+        const response = await fetch("/api/admin/assignments");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+        setAssignments(data.data);
+      } catch (error) {
+        setMessage(error.message || "Unable to load assignments.");
+      }
+    }
+    load();
+  }, []);
+
+  async function submit(event) {
     event.preventDefault();
-    setChecked(true);
+    const form = new FormData(event.currentTarget);
+    const assignment = assignments.find((item) => item._id === selected);
+    if (!assignment) {
+      setMessage("Select an assigned class.");
+      return;
+    }
+    try {
+      const response = await fetch("/api/grades/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subjectId: assignment.subjectId,
+          courseSection: assignment.courseSection,
+          year: assignment.year,
+          term: form.get("term"),
+          grades: [{
+            studentId: form.get("studentId"),
+            score: Number(form.get("score")),
+            comments: form.get("comments"),
+          }],
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setMessage("Grade submitted for review.");
+    } catch (error) {
+      setMessage(error.message || "Unable to submit the grade.");
+    }
   }
 
+  const assignment = assignments.find((item) => item._id === selected);
   return (
     <main className={styles.page}>
-      <Link  className={styles.backLink} href="/">← Back to home</Link>
-
+      <a className={styles.backLink} href="/">Back to home</a>
       <div className={styles.card}>
         <div className={styles.brand}>
-          <img
-            src="/images/ism-logo.webp"
-            alt=""
-            className={styles.logo}
-          />
-          <div>
-            <p className={styles.school}>Instituto Salvador Moncada</p>
-            <p className={styles.brandSubtitle}>Academic records</p>
-          </div>
-          <span className={styles.badge}>Preview</span>
+          <img src="/images/ism-logo.webp" alt="" className={styles.logo} />
+          <div><p className={styles.school}>Instituto Salvador Moncada</p><p className={styles.brandSubtitle}>Academic records</p></div>
         </div>
-
         <div className={styles.content}>
           <div className={styles.intro}>
             <p className={styles.eyebrow}>Teacher workspace</p>
             <h1>Grade entry</h1>
-            <p>Enter the class details and a student’s score below.</p>
+            <p>Submit a grade for review. Contact an administrator if your class is not assigned.</p>
           </div>
-
-          <div className={styles.notice}>
-            <strong>Sample information only</strong>
-            <p>
-              This preview does not save or submit grades. Secure sign-in is
-              still being developed.
-            </p>
-          </div>
-
-          <form
-            className={styles.form}
-            onSubmit={checkEntry}
-            onChange={() => setChecked(false)}
-          >
-            <div className={styles.sectionHeading}>
-              <h2>Class details</h2>
-              <p>Identify the class and term.</p>
-            </div>
-            <div className={styles.grid}>
-              <div className={styles.field}>
-                <label htmlFor="subject">Subject</label>
-                <input id="subject" type="text" placeholder="e.g. Mathematics" required />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="course-section">Course section</label>
-                <input id="course-section" type="text" placeholder="e.g. 10-A" required />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="term">Term <span>Optional</span></label>
-                <input id="term" type="text" placeholder="e.g. Q1" />
-              </div>
-            </div>
-
-            <div className={styles.sectionHeading}>
-              <h2>Student grade</h2>
-              <p>Add a sample student and score.</p>
-            </div>
-            <div className={styles.grid}>
-              <div className={styles.field}>
-                <label htmlFor="student">Student ID</label>
-                <input id="student" type="text" placeholder="e.g. student-001" required />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="score">Score <span>0–100</span></label>
-                <input id="score" type="number" min="0" max="100" step="any" placeholder="e.g. 85" required />
-              </div>
-              <div className={`${styles.field} ${styles.fullWidth}`}>
-                <label htmlFor="comments">Comments <span>Optional</span></label>
-                <textarea id="comments" rows="3" placeholder="Add a note about this grade" />
-              </div>
-            </div>
-
-            <div className={styles.actions}>
-              <button type="submit">Check sample entry</button>
-              <p role="status" aria-live="polite">
-                {checked ? "The sample entry is valid. Nothing was saved or submitted." : ""}
-              </p>
-            </div>
+          <form className={styles.form} onSubmit={submit}>
+            <label className={styles.field}>Assigned class
+              <select value={selected} onChange={(event) => setSelected(event.target.value)} required>
+                <option value="">Select a class</option>
+                {assignments.map((item) => <option key={item._id} value={item._id}>{item.subjectId} — {item.courseSection} ({item.year})</option>)}
+              </select>
+            </label>
+            <label className={styles.field}>Student
+              <select name="studentId" key={selected} required defaultValue="">
+                <option value="">Select a student</option>
+                {assignment?.studentIds.map((id) => <option key={id} value={id}>{id}</option>)}
+              </select>
+            </label>
+            <label className={styles.field}>Term
+              <select name="term" required defaultValue=""><option value="">Select a term</option>
+                {["Q1", "Q2", "Q3", "Q4"].map((term) => <option key={term} value={term}>{term}</option>)}
+              </select>
+            </label>
+            <label className={styles.field}>Score <input name="score" type="number" min="0" max="100" step="any" required /></label>
+            <label className={styles.field}>Comments <textarea name="comments" rows="3" /></label>
+            <div className={styles.actions}><button type="submit">Submit grade</button></div>
           </form>
+          <p role="status" aria-live="polite">{message}</p>
         </div>
       </div>
     </main>

@@ -67,12 +67,6 @@ export default function StudentsPage() {
           </div>
         </div>
 
-        <div className="student-notice">
-          Temporary staff access uses the <code>x-user-role</code> header until
-          shared authentication lands. The UI defaults to the staff role for
-          local development.
-        </div>
-
         <SearchFilter
           query={query}
           onQueryChange={setQuery}

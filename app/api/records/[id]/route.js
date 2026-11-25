@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../../../lib/db";
 import Record from "../../../../models/record";
+import { authorize, assignedRecordFilter } from "../../../../lib/authorization.js";
 
 // GET /api/records/[id] - Fetch a single student record by studentId
 export async function GET(request, { params }) {
   try {
+    const access = await authorize(["admin", "staff", "teacher"]);
+    if (access.response) return access.response;
     await dbConnect();
     const { id } = await params;
 
-    const student = await Record.findOne({ studentId: id });
+    const filter = access.user.role === "teacher" ? await assignedRecordFilter(access.user) : {};
+    const student = filter.$or?.length === 0 ? null : await Record.findOne({ ...filter, studentId: id });
     if (!student) {
       return NextResponse.json(
         { success: false, message: "Student profile not found." },
@@ -35,6 +39,8 @@ export async function GET(request, { params }) {
 // PUT /api/records/[id] - Update an existing student record by studentId
 export async function PUT(request, { params }) {
   try {
+    const access = await authorize(["admin", "staff"]);
+    if (access.response) return access.response;
     await dbConnect();
     const { id } = await params;
     const body = await request.json();
@@ -72,6 +78,8 @@ export async function PUT(request, { params }) {
 // DELETE /api/records/[id] - Permanently delete a student record by studentId
 export async function DELETE(request, { params }) {
   try {
+    const access = await authorize(["admin", "staff"]);
+    if (access.response) return access.response;
     await dbConnect();
     const { id } = await params;
 

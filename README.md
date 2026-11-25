@@ -34,10 +34,34 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Set `MONGODB_URI` in a
-local environment file before using database-backed features. The Next.js
-database helper reads `MONGODB_URI` and otherwise uses a local MongoDB
-instance. Do not commit credentials or tokens.
+Open [http://localhost:3000](http://localhost:3000). Set `MONGODB_URI` and
+`AUTH_SECRET` in a local environment file and in the deployment environment.
+Obtain both securely; do not commit credentials or tokens.
+
+## Proposed account permissions
+
+These roles are a proposal pending team approval. New accounts are inactive
+until an administrator approves them. Administrators manage accounts, teacher
+records, and class assignments. Staff manage students and academic records and
+review grades. Teachers can view assigned students and records and submit
+grades for assigned classes. Submitted grades cannot be edited; a rejected
+grade must be submitted again.
+
+To establish the first administrator, register an account and have a trusted
+database administrator verify it and securely set its role to `admin` and
+`isActive` to true. Review any existing user accounts before deployment; this
+change does not deactivate previously stored accounts automatically. The admin
+page can then approve accounts, link teacher accounts to teacher records, and
+assign classes and students. The legacy Express server is separate and does not
+use these Next.js access controls; do not deploy it with sensitive records.
+
+## Secretary grade review
+
+Only approved staff and administrators can review submissions. Grade review
+requires MongoDB transaction support (a replica set or sharded cluster).
+
+- `PUT /api/secretary/grades/:submissionId/approve` takes `{ "year": 2026 }`. The year must match the submission when present. The pending roster's `Q1`–`Q4` term selects `parcial1`–`parcial4`. Each student must match exactly one existing record by student ID, subject (the record's `course`), section, and year. If any match is missing or ambiguous, no grades are saved.
+- `PUT /api/secretary/grades/:submissionId/reject` takes `{ "rejectionReason": "Please verify the roster." }`. It saves the reason and marks the pending submission `REJECTED` without changing student records.
 
 ## Project resources
 

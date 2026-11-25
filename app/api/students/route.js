@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../../lib/db";
-import { authorizeStaff } from "../../../lib/authorizeStaff";
+import { authorize, assignedStudentFilter } from "../../../lib/authorization.js";
 import Student from "../../../models/Student";
 import {
   clientSafeValidationError,
@@ -51,8 +51,8 @@ function buildStudentQuery(searchParams) {
 }
 
 export async function GET(request) {
-  const auth = authorizeStaff(request);
-  if (!auth.ok) {
+  const auth = await authorize(["admin", "staff", "teacher"]);
+  if (auth.response) {
     return auth.response;
   }
 
@@ -67,6 +67,9 @@ export async function GET(request) {
       );
     }
 
+    if (auth.user.role === "teacher") {
+      built.query.$and = [await assignedStudentFilter(auth.user)];
+    }
     const students = await Student.find(built.query).sort({
       lastName: 1,
       firstName: 1,
@@ -90,8 +93,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const auth = authorizeStaff(request);
-  if (!auth.ok) {
+  const auth = await authorize(["admin", "staff"]);
+  if (auth.response) {
     return auth.response;
   }
 

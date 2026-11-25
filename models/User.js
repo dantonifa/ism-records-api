@@ -33,8 +33,12 @@ const userSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
       required: true,
+    },
+    teacherId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
     },
   },
   {

@@ -8,4 +8,4 @@ const teacherSchema = new mongoose.Schema({
   phone: { type: String },
 });
 
-module.exports = mongoose.model("Teacher", teacherSchema);
+module.exports = mongoose.models.Teacher || mongoose.model("Teacher", teacherSchema);
