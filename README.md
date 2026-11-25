@@ -68,8 +68,7 @@ use these Next.js access controls; do not deploy it with sensitive records.
 The proposed course module stores a unique code, name, optional description, and
 active or archived status. Codes are trimmed, normalized to uppercase, and
 cannot be changed or reused after archiving. MongoDB must have the model's unique
-code index in place. Course records are not yet linked to enrollments or grade
-assignments.
+code index in place. Course records are not yet linked to grade assignments.
 
 Approved administrators, staff, and teachers can browse active courses at
 `/courses`; only administrators can create, edit, or archive them.
@@ -79,6 +78,26 @@ Approved administrators, staff, and teachers can browse active courses at
 - `GET /api/courses/:id` reads an active course; `PATCH /api/courses/:id`
   updates its name or description.
 - `DELETE /api/courses/:id` archives a course rather than deleting its data.
+
+## Enrollment management
+
+This enrollment model and its permissions are proposed, not yet team-approved,
+and depend on the authentication and course-management drafts (#31 and #32).
+Approved administrators and staff can manage enrollments at `/enrollments`;
+teachers have no enrollment access until assignment rules are agreed.
+
+An enrollment links one student to one course. The pair is unique across active
+and archived enrollments; restore an archived enrollment instead of creating a
+duplicate. MongoDB must have the model's unique student/course compound index
+in place before use. The student and course must both be active when creating
+or restoring an enrollment. Archiving either does not automatically archive
+existing enrollments. Enrollment references cannot be changed after creation.
+
+- `GET /api/enrollments` lists active and archived enrollments; `POST` creates
+  one from MongoDB `studentId` and `courseId` values.
+- `GET /api/enrollments/:id` reads an enrollment; `PATCH` changes its `status`
+  to `active` or `archived`.
+- `DELETE /api/enrollments/:id` archives an enrollment rather than deleting it.
 
 ## Secretary grade review
 

@@ -22,6 +22,7 @@ export default function HomePage() {
             <li><a href="records.html">RECORDS</a></li>
             <li><Link href="/students">STUDENTS</Link></li>
             <li><Link href="/courses">COURSES</Link></li>
+            <li><Link href="/enrollments">ENROLLMENTS</Link></li>
             <li><a href="/login">SIGN IN</a></li>
             <li><a href="/signup">REQUEST ACCOUNT</a></li>
             <li><a href="/grades/entry">GRADES</a></li>
