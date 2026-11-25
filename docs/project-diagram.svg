@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1320" viewBox="0 0 1400 1320" role="img" aria-labelledby="title description">
+  <title id="title">Instituto Salvador Moncada Records - Project Specification Diagram</title>
+  <desc id="description">A proposed full-stack school records application showing users, frontend, authentication, API, database, user stories, acceptance criteria, and implementation priorities.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#52728a"/>
+    </marker>
+    <style>
+      .bg { fill: #f3f6fa; }
+      .box { fill: white; stroke: #cbd9e5; stroke-width: 2; }
+      .header { font: bold 32px Arial, sans-serif; fill: #ffffff; }
+      .subtitle { font: 18px Arial, sans-serif; fill: #dceaf5; }
+      .section { font: bold 21px Arial, sans-serif; fill: #143b59; }
+      .body { font: 17px Arial, sans-serif; fill: #253d50; }
+      .small { font: 15px Arial, sans-serif; fill: #466174; }
+      .line { stroke: #52728a; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .badge { fill: #e9f4f4; stroke: #a4d5d0; }
+    </style>
+  </defs>
+  <rect class="bg" width="1400" height="1320"/>
+  <rect x="0" y="0" width="1400" height="115" fill="#123d5c"/>
+  <text class="header" x="48" y="49">Instituto Salvador Moncada Records</text>
+  <text class="subtitle" x="48" y="82">Proposed full-stack application | Specification diagram | P1 = minimum viable product</text>
+
+  <rect class="box" x="40" y="135" width="1320" height="92" rx="12"/>
+  <text class="section" x="62" y="166">PURPOSE AND USERS</text>
+  <text class="body" x="62" y="196">Administrators, teachers, and staff replace fragmented paper records with secure, centralized student and academic data.</text>
+
+  <rect class="box" x="40" y="252" width="1320" height="126" rx="12"/>
+  <text class="section" x="62" y="282">P1  |  FRONTEND: RESPONSIVE NEXT.JS APPLICATION</text>
+  <text class="body" x="62" y="311">Views: Sign up / sign in and profile  •  Student records  •  Courses and enrollments  •  Grades and academic history</text>
+  <text class="body" x="62" y="340">Shared components: navigation, form fields, data tables, search/filter, and feedback messages.</text>
+  <path class="line" d="M700 379 V400"/>
+
+  <rect class="box" x="40" y="405" width="1320" height="128" rx="12"/>
+  <text class="section" x="62" y="435">P1  |  ACCOUNT ACCESS, SECURITY, AND VALIDATION</text>
+  <text class="body" x="62" y="464">Auth.js or Clerk; server-side authorization and validation; deny unauthorized requests and reject invalid input.</text>
+  <text class="body" x="62" y="493">Proposed roles: administrators manage users and records; teachers and staff access records according to assigned permissions.</text>
+  <path class="line" d="M700 534 V555"/>
+
+  <rect class="box" x="40" y="560" width="1320" height="168" rx="12"/>
+  <text class="section" x="62" y="590">P1  |  BACKEND: PROPOSED REST API</text>
+  <text class="body" x="62" y="620">/api/students and /api/students/:id  —  create, list, read, update, and delete student profiles</text>
+  <text class="body" x="62" y="647">/api/courses and /api/courses/:id  —  create, list, read, update, and delete courses</text>
+  <text class="body" x="62" y="674">/api/enrollments and /api/enrollments/:id  —  create, list, read, update, and delete enrollments</text>
+  <text class="body" x="62" y="701">/api/grades and /api/grades/:id  —  create, list, read, update, and delete grades</text>
+  <path class="line" d="M700 729 V750"/>
+
+  <rect class="box" x="40" y="755" width="1320" height="94" rx="12"/>
+  <text class="section" x="62" y="785">P1  |  DATABASE AND DATA RELATIONSHIPS</text>
+  <text class="body" x="62" y="815">Students + Courses → Enrollments → Grades  |  PostgreSQL, MongoDB, or Supabase: team to decide</text>
+
+  <rect class="box" x="40" y="874" width="1320" height="250" rx="12"/>
+  <text class="section" x="62" y="905">P1  |  USER STORIES AND ACCEPTANCE CRITERIA</text>
+  <text class="body" x="62" y="936">Account: A user can sign up and sign in with valid information; invalid information displays an error.</text>
+  <text class="body" x="62" y="967">Students: An authorized user can create, read, update, and delete profiles; invalid data is rejected.</text>
+  <text class="body" x="62" y="998">Courses and enrollments: Authorized users can manage both; duplicate enrollments are rejected.</text>
+  <text class="body" x="62" y="1029">Grades: Authorized users can manage grades; invalid grades and unauthorized changes are rejected.</text>
+  <text class="body" x="62" y="1060">Academic history: An authorized user can view the selected student's enrollments and grades.</text>
+  <text class="small" x="62" y="1098">All actions provide appropriate loading, success, and error feedback.</text>
+
+  <rect class="box" x="40" y="1149" width="820" height="117" rx="12"/>
+  <text class="section" x="62" y="1179">TECHNOLOGY AND DEPLOYMENT</text>
+  <text class="body" x="62" y="1208">Next.js App Router • TypeScript • Tailwind CSS</text>
+  <text class="body" x="62" y="1236">Server and client rendering • Render hosting proposed</text>
+  <rect class="badge" x="880" y="1149" width="480" height="117" rx="12"/>
+  <text class="section" x="902" y="1179">P2  |  FUTURE ENHANCEMENT</text>
+  <text class="body" x="902" y="1208">Expanded academic reports</text>
+  <text class="small" x="40" y="1301">Planning diagram; proposed roles, database, and hosting require team confirmation.</text>
+</svg>

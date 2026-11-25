@@ -17,6 +17,7 @@ export default function HomePage() {
             <li><a href="./discover.html">DISCOVER</a></li>
             <li><a href="./register.html">REGISTER</a></li>
             <li><a href="records.html">RECORDS</a></li>
+            <li><a href="/students">STUDENTS</a></li>
             </ul>
         </nav>
     </header>

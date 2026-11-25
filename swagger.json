@@ -16,6 +16,178 @@
     }
   ],
   "paths": {
+    "/api/students": {
+      "get": {
+        "summary": "List or search student profiles",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Search studentId, first name, last name, or email"
+          },
+          {
+            "name": "studentId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["active", "archived", "all"],
+              "default": "active"
+            }
+          },
+          {
+            "name": "x-user-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["administrator", "teacher", "staff"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Student list returned" },
+          "400": { "description": "Invalid query parameters" },
+          "401": { "description": "Missing role header" },
+          "403": { "description": "Role is not authorized" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "post": {
+        "summary": "Create a student profile",
+        "parameters": [
+          {
+            "name": "x-user-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["administrator", "teacher", "staff"]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Student" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Student created" },
+          "400": { "description": "Validation failed" },
+          "401": { "description": "Missing role header" },
+          "403": { "description": "Role is not authorized" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/students/{id}": {
+      "get": {
+        "summary": "Get a student profile by studentId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "x-user-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["administrator", "teacher", "staff"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Student found" },
+          "401": { "description": "Missing role header" },
+          "403": { "description": "Role is not authorized" },
+          "404": { "description": "Student not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "patch": {
+        "summary": "Update a student profile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "x-user-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["administrator", "teacher", "staff"]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StudentUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Student updated" },
+          "400": { "description": "Validation failed" },
+          "401": { "description": "Missing role header" },
+          "403": { "description": "Role is not authorized" },
+          "404": { "description": "Student not found" }
+        }
+      },
+      "delete": {
+        "summary": "Archive a student profile (remove from normal use)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "x-user-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["administrator", "teacher", "staff"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Student archived" },
+          "401": { "description": "Missing role header" },
+          "403": { "description": "Role is not authorized" },
+          "404": { "description": "Student not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
     "/api/grades/submit": {
       "post": {
         "summary": "Submit grades for secretary review",
@@ -201,6 +373,44 @@
   },
   "components": {
     "schemas": {
+      "Student": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "studentId",
+          "firstName",
+          "lastName",
+          "email",
+          "gradeLevel",
+          "section",
+          "year"
+        ],
+        "properties": {
+          "studentId": { "type": "string" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "gradeLevel": { "type": "string" },
+          "section": { "type": "string" },
+          "year": { "type": "integer", "minimum": 2000, "maximum": 2100 },
+          "status": { "type": "string", "enum": ["active", "archived"] }
+        }
+      },
+      "StudentUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "gradeLevel": { "type": "string" },
+          "section": { "type": "string" },
+          "year": { "type": "integer", "minimum": 2000, "maximum": 2100 },
+          "status": { "type": "string", "enum": ["active", "archived"] }
+        }
+      },
       "Teacher": {
         "type": "object",
         "required": ["teacherId", "name", "department", "email"],
