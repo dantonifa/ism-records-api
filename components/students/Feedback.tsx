@@ -1,12 +1,16 @@
-export function LoadingState({ message = "Loading students..." }) {
+interface MessageProps {
+  message?: string;
+}
+
+export function LoadingState({ message = "Loading students..." }: MessageProps) {
   return <p className="student-loading" role="status">{message}</p>;
 }
 
-export function EmptyState({ message }) {
+export function EmptyState({ message }: MessageProps) {
   return <p className="student-empty">{message}</p>;
 }
 
-export function ErrorMessage({ message }) {
+export function ErrorMessage({ message }: MessageProps) {
   if (!message) {
     return null;
   }
@@ -18,7 +22,7 @@ export function ErrorMessage({ message }) {
   );
 }
 
-export function SuccessMessage({ message }) {
+export function SuccessMessage({ message }: MessageProps) {
   if (!message) {
     return null;
   }

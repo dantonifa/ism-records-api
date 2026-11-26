@@ -14,16 +14,16 @@ behavior.
 ## Technology decisions
 
 - The target application uses Next.js App Router, React, and TypeScript in
-  strict mode. TypeScript is installed, but the current Next.js app uses
-  JavaScript. WDD 430 requires TypeScript typing; coordinate the transition
-  with the team rather than assuming it is complete. Preserve the language of
-  the file being changed.
+  strict mode. The current Next.js app uses both JavaScript and TypeScript;
+  coordinate the remaining transition with the team rather than assuming it
+  is complete. Preserve the language of the file being changed.
 - Use Tailwind CSS for responsive styling and preserve the existing visual
   language unless a design decision has been documented.
 - MongoDB is the team database decision. Use Mongoose for schemas and database
   access. The connection string is provided through `MONGODB_URI`; never commit
   credentials or hard-code a deployment URI.
-- Render is the proposed deployment platform.
+- The GitHub-connected Next.js application is currently deployed on Vercel.
+  The older Express server is separate and references a Render deployment.
 - Authentication provider selection is still pending. Do not add Auth.js,
   Clerk, or a custom authentication system without a documented team decision.
 - Authorization must be enforced server-side with role checks and input
@@ -38,8 +38,7 @@ existing code; do not assume they run when using `npm run dev`.
 ## Repository structure
 
 - `app/` contains the Next.js layout, pages, and API route handlers.
-- `app/grades/entry/` contains a client-side grade-entry preview and its CSS
-  module; it does not submit or save grades.
+- `app/grades/entry/` contains the grade submission page and its CSS module.
 - `models/` contains Mongoose models (records, teachers, grade submissions,
   and related entities).
 - `lib/db.js` provides the Next.js MongoDB connection; `controllers/` and

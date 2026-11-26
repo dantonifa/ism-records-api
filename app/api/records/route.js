@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../../lib/db";
 import Record from "../../../models/record";
+import { authorize, assignedRecordFilter } from "../../../lib/authorization.js";
 
 // Método GET para consultar todos los registros académicos
 export async function GET() {
   try {
+    const access = await authorize(["admin", "staff", "teacher"]);
+    if (access.response) return access.response;
     await dbConnect();
-    const records = await Record.find({});
+    const filter = access.user.role === "teacher" ? await assignedRecordFilter(access.user) : {};
+    const records = filter.$or?.length === 0 ? [] : await Record.find(filter);
 
     return NextResponse.json(
       {
@@ -28,6 +32,8 @@ export async function GET() {
 // Método POST para registrar un nuevo estudiante con sus notas
 export async function POST(request) {
   try {
+    const access = await authorize(["admin", "staff"]);
+    if (access.response) return access.response;
     await dbConnect();
     const body = await request.json();
 

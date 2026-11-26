@@ -6,10 +6,11 @@ const submissionFields = new Set([
   "subjectId",
   "courseSection",
   "term",
+  "year",
   "grades",
 ]);
 
-const gradeFields = new Set(["studentId", "score"]);
+const gradeFields = new Set(["studentId", "score", "comments"]);
 
 function validateGradeSubmission(body) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {

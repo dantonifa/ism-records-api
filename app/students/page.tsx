@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import "./students.css";
 import SearchFilter from "../../components/students/SearchFilter";
 import StudentTable from "../../components/students/StudentTable";
@@ -10,10 +11,11 @@ import {
   LoadingState,
 } from "../../components/students/Feedback";
 import { studentRequest } from "../../lib/studentApi";
+import type { Student } from "../../types/records";
 
 export default function StudentsPage() {
   const [query, setQuery] = useState("");
-  const [students, setStudents] = useState([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -26,7 +28,7 @@ export default function StudentsPage() {
       params.set("q", searchValue.trim());
     }
 
-    const { response, payload } = await studentRequest(
+    const { response, payload } = await studentRequest<Student[]>(
       `/api/students?${params.toString()}`,
     );
 
@@ -45,16 +47,16 @@ export default function StudentsPage() {
     loadStudents();
   }, []);
 
-  function handleSearch(event) {
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     loadStudents(query);
   }
 
   return (
     <main className="student-page">
-      <a className="student-back" href="/">
+      <Link className="student-back" href="/">
         Back to home
-      </a>
+      </Link>
 
       <section className="student-panel">
         <div className="student-header">
@@ -63,14 +65,8 @@ export default function StudentsPage() {
             <p>Search, browse, and manage student profiles.</p>
           </div>
           <div className="student-actions">
-            <a href="/students/new">Add student</a>
+            <Link href="/students/new">Add student</Link>
           </div>
-        </div>
-
-        <div className="student-notice">
-          Temporary staff access uses the <code>x-user-role</code> header until
-          shared authentication lands. The UI defaults to the staff role for
-          local development.
         </div>
 
         <SearchFilter

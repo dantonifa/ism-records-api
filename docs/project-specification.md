@@ -77,12 +77,12 @@ The initial release focuses on account access, role-based permissions, student a
 - **Language:** TypeScript in strict mode.
 - **Styling:** Tailwind CSS with a consistent, responsive design for desktop and mobile.
 - **Data:** MongoDB with Mongoose; this is the team's selected database solution.
-- **Authentication:** Auth.js v5 (NextAuth.js), Clerk, or a team-approved custom solution; the provider remains to be confirmed.
-- **Authorization:** Server-side role checks and input validation for protected records and API requests. Specific role permissions and account approval procedures require team confirmation.
+- **Authentication:** Auth.js v5 (NextAuth.js).
+- **Authorization:** Server-side role checks and input validation for protected records and API requests. Account approval and role permissions are documented in the README.
 - **Views:** Sign-in and account management, student records, courses and enrollments, and grades and academic history.
 - **Components:** At least five reusable components across multiple pages, such as navigation, form fields, data tables, search filters, and feedback messages.
 - **Rendering and feedback:** Use server and client components where appropriate, with loading states, validation messages, and error feedback.
-- **Deployment:** Render is proposed for hosting; the team will confirm deployment and database compatibility.
+- **Deployment:** The GitHub-connected Next.js application is currently deployed on Vercel. The team should confirm the production environment and database compatibility.
 
 ## Core API Endpoints
 
