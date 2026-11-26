@@ -14,8 +14,10 @@ behavior.
 ## Technology decisions
 
 - The target application uses Next.js App Router, React, and TypeScript in
-  strict mode. The current development command still runs Next.js with React
-  and JavaScript in places; preserve the language of the file being changed.
+  strict mode. TypeScript is installed, but the current Next.js app uses
+  JavaScript. WDD 430 requires TypeScript typing; coordinate the transition
+  with the team rather than assuming it is complete. Preserve the language of
+  the file being changed.
 - Use Tailwind CSS for responsive styling and preserve the existing visual
   language unless a design decision has been documented.
 - MongoDB is the team database decision. Use Mongoose for schemas and database
@@ -36,6 +38,8 @@ existing code; do not assume they run when using `npm run dev`.
 ## Repository structure
 
 - `app/` contains the Next.js layout, pages, and API route handlers.
+- `app/grades/entry/` contains a client-side grade-entry preview and its CSS
+  module; it does not submit or save grades.
 - `models/` contains Mongoose models (records, teachers, grade submissions,
   and related entities).
 - `lib/db.js` provides the Next.js MongoDB connection; `controllers/` and
@@ -44,6 +48,21 @@ existing code; do not assume they run when using `npm run dev`.
   `routes/`, and `config/` support the older Express server.
 - `tests/` contains Node.js tests for grade submissions.
 - `docs/` contains the project specification and team meeting notes.
+
+## Existing data and conventions
+
+- The record model stores a student ID, name, course, four partial grades,
+  grade level, section, and year. The teacher model stores a teacher ID and
+  contact details.
+- Grade submissions identify a teacher, subject, course section, optional term,
+  and student scores. They default to pending review; approval and rejection
+  fields are also present.
+- Follow existing names and casing when changing code or data. Existing
+  JavaScript identifiers and model fields generally use camelCase, with some
+  Spanish record field names; do not rename stored fields without team agreement
+  and a migration plan.
+- Next.js route handlers use the App Router's `route.js` convention. Models and
+  shared grade-submission modules use CommonJS; Next.js app files use ES modules.
 
 ## Domain model
 
