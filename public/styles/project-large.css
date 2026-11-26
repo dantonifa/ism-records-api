@@ -18,7 +18,9 @@ body header {
     align-items: center; /* Vertically centers the logo, title, and navigation links */
     justify-content: space-between; /* Pushes identity to the left and navigation menu to the right */
     width: 100%;
-    height: 120px; /* Streamlined from 200px for a more compact and elegant profile */
+    min-height: 120px;
+    height: auto;
+    flex-wrap: wrap;
     background-color: rgba(192, 251, 255, 0.816);
     color: black;
     padding: 0 20px;
@@ -49,10 +51,15 @@ header nav {
 
 nav ul {
     display: flex;
+    flex-wrap: wrap;
     list-style-type: none;
     margin: 0;
     padding: 0;
     gap: 15px; /* Replaces problematic centimeter margins with a clean layout flex gap */
+}
+
+header #menu {
+    display: none;
 }
 
 header nav ul li a { 
@@ -642,5 +649,4 @@ body main {
 .status-error {
   color: red;
 }
-
 

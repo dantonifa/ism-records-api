@@ -1,4 +1,6 @@
-export default function StudentTable({ students }) {
+import type { Student } from "../../types/records";
+
+export default function StudentTable({ students }: { students: Student[] }) {
   return (
     <div className="student-table-wrap">
       <table className="student-table">

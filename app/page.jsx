@@ -1,31 +1,27 @@
+import HomeNavigation from "../components/HomeNavigation";
+import Image from "next/image";
+
 export default function HomePage() {
   return (
         <>
     <header>
-        <img 
+        <Image
             src="/images/ism-logo.webp" 
             alt="Instituto Privado Salvador Moncada Logo" 
+            width={61}
+            height={70}
             style={{ height: "70px", width: "auto", objectFit: "contain" }}
         />
         <h1>
            INSTITUTO PRIVADO SALVADOR MONCADA
         </h1>
-        <button type="button" id="menu" title="Menu"></button>
-        <nav id="nav-container">
-            <ul>
-            <li><a href="./webpage-project.html">HOME</a></li>
-            <li><a href="./discover.html">DISCOVER</a></li>
-            <li><a href="./register.html">REGISTER</a></li>
-            <li><a href="records.html">RECORDS</a></li>
-            <li><a href="/students">STUDENTS</a></li>
-            </ul>
-        </nav>
+        <HomeNavigation />
     </header>
     <main>
         <div id="hero">
-            <img id="ism-ad" src="images/ism-ad.webp" alt="Instituto Privado Salvador Moncada" />
+            <Image id="ism-ad" src="/images/ism-ad.webp" alt="Instituto Privado Salvador Moncada" width={1600} height={1200} sizes="(max-width: 480px) 100vw, 80vw" priority fetchPriority="high" />
         </div>
-        <section class="card-1">
+        <section className="card-1">
             <div id="card-1-text">
                 <h2>
                     About Us
@@ -39,10 +35,10 @@ export default function HomePage() {
                 </p>
             </div>
             <picture id="science">
-                <img src="images/ism-science.webp" alt="Science" />
+                <Image src="/images/ism-science.webp" alt="Science" width={1864} height={1243} sizes="(max-width: 480px) 100vw, 40vw" />
             </picture>
         </section>
-        <section class="card-2">
+        <section className="card-2">
             <div id="card-2-text">
                 <h2>
                     Address
@@ -69,32 +65,32 @@ export default function HomePage() {
                 </p>            
             </div>                        
             <div id="flag">                        
-                <img src ="images/Honduras_flag.webp" alt ="Honduras Flag" />
+                <Image src="/images/honduras_flag.webp" alt="Honduras Flag" width={255} height={128} />
             </div>
         </div>
         <div id="social_media">
             {/* Facebook link */}
             <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" title="Visit our Facebook page">
-                <img src="images/facebook_icon.svg" alt="Facebook" />
+                <Image src="/images/facebook_icon.svg" alt="Facebook" width={50} height={50} />
             </a>
             {/* YouTube link */}
             <a href="https://www.youtube.com/watch?v=eYJzbcT9A8A" target="_blank" rel="noopener noreferrer" title="Visit our YouTube channel">
-                <img src="images/youtube_icon.svg" alt="YouTube" />
+                <Image src="/images/youtube_icon.svg" alt="YouTube" width={50} height={50} />
             </a>
             {/* LinkedIn link */}
             <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" title="Visit our LinkedIn page">
-                <img src="images/linkedin_icon.svg" alt="David Fajardo LinkedIn" />
+                <Image src="/images/Linkedin_icon.svg" alt="David Fajardo LinkedIn" width={50} height={50} />
             </a>
         </div>
         <div id="update">
             {/* Last modified date */}
-            <div class="last_modified">
+            <div className="last_modified">
                     <p>
                     Last Modified: <span id="lastModified"></span>
                     </p>
             </div>
             {/* Number of registered users */}
-            <div class="review_count">
+            <div className="review_count">
                 <p>
                     Number of registered users: <span id="review-count">0</span>
                 </p>

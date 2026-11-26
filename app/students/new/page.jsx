@@ -1,6 +1,7 @@
 "use client";
 
 import "../students.css";
+import Link from "next/link";
 import StudentForm from "../../../components/students/StudentForm";
 import { studentRequest } from "../../../lib/studentApi";
 
@@ -26,9 +27,9 @@ export default function NewStudentPage() {
 
   return (
     <main className="student-page">
-      <a className="student-back" href="/students">
+      <Link className="student-back" href="/students">
         Back to students
-      </a>
+      </Link>
 
       <section className="student-panel">
         <div className="student-header">

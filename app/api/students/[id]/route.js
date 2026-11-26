@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../../../lib/db";
-import { authorizeStaff } from "../../../../lib/authorizeStaff";
+import { authorize, assignedStudentFilter } from "../../../../lib/authorization.js";
 import Student from "../../../../models/Student";
 import {
   clientSafeValidationError,
@@ -8,15 +8,16 @@ import {
 } from "../../../../middleware/validateStudent";
 
 export async function GET(request, { params }) {
-  const auth = authorizeStaff(request);
-  if (!auth.ok) {
+  const auth = await authorize(["admin", "staff", "teacher"]);
+  if (auth.response) {
     return auth.response;
   }
 
   try {
     await dbConnect();
     const { id } = await params;
-    const student = await Student.findOne({ studentId: id });
+    const filter = auth.user.role === "teacher" ? await assignedStudentFilter(auth.user) : {};
+    const student = await Student.findOne({ ...filter, studentId: id });
 
     if (!student) {
       return NextResponse.json(
@@ -36,8 +37,8 @@ export async function GET(request, { params }) {
 }
 
 export async function PATCH(request, { params }) {
-  const auth = authorizeStaff(request);
-  if (!auth.ok) {
+  const auth = await authorize(["admin", "staff"]);
+  if (auth.response) {
     return auth.response;
   }
 
@@ -88,8 +89,8 @@ export async function PATCH(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const auth = authorizeStaff(request);
-  if (!auth.ok) {
+  const auth = await authorize(["admin", "staff"]);
+  if (auth.response) {
     return auth.response;
   }
 

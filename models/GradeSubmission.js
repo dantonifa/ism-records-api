@@ -5,6 +5,7 @@ const gradeSubmissionSchema = new mongoose.Schema({
   subjectId: { type: String, required: true },
   courseSection: { type: String, required: true },
   term: { type: String },
+  year: { type: Number },
   status: {
     type: String,
     enum: ["PENDING_REVIEW", "APPROVED", "REJECTED"],
