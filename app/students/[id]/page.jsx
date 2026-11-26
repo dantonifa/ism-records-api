@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import "../students.css";
 import ConfirmDialog from "../../../components/students/ConfirmDialog";
 import {
@@ -73,9 +74,9 @@ export default function StudentDetailPage() {
 
   return (
     <main className="student-page">
-      <a className="student-back" href="/students">
+      <Link className="student-back" href="/students">
         Back to students
-      </a>
+      </Link>
 
       <section className="student-panel student-profile">
         <div className="student-header">

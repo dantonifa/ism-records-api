@@ -64,12 +64,13 @@ export async function POST(request) {
       name,
       email,
       password,
+      isActive: false,
     });
 
     return Response.json(
       {
         success: true,
-        message: "Account created successfully",
+        message: "Account created. An administrator must approve it before sign-in.",
         user: {
           id: user._id.toString(),
           name: user.name,

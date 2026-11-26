@@ -21,7 +21,8 @@ behavior.
 - MongoDB is the team database decision. Use Mongoose for schemas and database
   access. The connection string is provided through `MONGODB_URI`; never commit
   credentials or hard-code a deployment URI.
-- Render is the proposed deployment platform.
+- The GitHub-connected Next.js application is currently deployed on Vercel.
+  The older Express server is separate and references a Render deployment.
 - Authentication provider selection is still pending. Do not add Auth.js,
   Clerk, or a custom authentication system without a documented team decision.
 - Authorization must be enforced server-side with role checks and input
