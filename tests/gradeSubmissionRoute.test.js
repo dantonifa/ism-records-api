@@ -58,6 +58,7 @@ test("validates grade submissions before saving and returns the saved data", asy
   save.mock.mockImplementation(async () => {
     throw new Error("database unavailable");
   });
+
   const failedResponse = await POST(request(JSON.stringify(payload)));
   assert.equal(failedResponse.status, 500);
   assert.deepEqual(await failedResponse.json(), {

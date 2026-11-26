@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function GradeEntryPage() {
   const [checked, setChecked] = useState(false);
@@ -13,7 +14,7 @@ export default function GradeEntryPage() {
 
   return (
     <main className={styles.page}>
-      <a className={styles.backLink} href="/">← Back to home</a>
+      <Link  className={styles.backLink} href="/">← Back to home</Link>
 
       <div className={styles.card}>
         <div className={styles.brand}>

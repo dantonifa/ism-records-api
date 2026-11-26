@@ -1,3 +1,4 @@
+
 const GradeSubmission = require("../models/GradeSubmission");
 
 const submissionFields = new Set([
@@ -7,7 +8,8 @@ const submissionFields = new Set([
   "term",
   "grades",
 ]);
-const gradeFields = new Set(["studentId", "score", "comments"]);
+
+const gradeFields = new Set(["studentId", "score"]);
 
 function validateGradeSubmission(body) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -17,6 +19,7 @@ function validateGradeSubmission(body) {
   const unexpectedField = Object.keys(body).find(
     (field) => !submissionFields.has(field),
   );
+
   if (unexpectedField) {
     return { error: `Unexpected field: ${unexpectedField}` };
   }
@@ -29,22 +32,27 @@ function validateGradeSubmission(body) {
     if (!grade || typeof grade !== "object" || Array.isArray(grade)) {
       return { error: "Each grade must be an object" };
     }
+
     const unexpectedGradeField = Object.keys(grade).find(
       (field) => !gradeFields.has(field),
     );
+
     if (unexpectedGradeField) {
       return { error: `Unexpected grade field: ${unexpectedGradeField}` };
     }
+
     if (typeof grade.score !== "number" || !Number.isFinite(grade.score)) {
       return { error: "Each grade score must be a valid number" };
     }
   }
 
   const submission = new GradeSubmission(body);
-  const error = submission.validateSync();
-  if (error) {
-    return { error: error.message };
+  const validationError = submission.validateSync();
+
+  if (validationError) {
+    return { error: validationError.message };
   }
+
   return { submission };
 }
 

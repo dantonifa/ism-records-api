@@ -26,3 +26,6 @@ coverage/
 
 # VS Code settings
 .vscode/
+
+# Local registration test data
+register-test.json

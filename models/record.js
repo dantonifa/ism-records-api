@@ -18,4 +18,5 @@ const recordSchema = new mongoose.Schema(
   { versionKey: false },
 ); // 👈 disables __v
 
-module.exports = mongoose.model("Record", recordSchema);
+module.exports =
+  mongoose.models.Record || mongoose.model("Record", recordSchema);
