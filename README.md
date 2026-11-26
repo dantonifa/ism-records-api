@@ -74,6 +74,10 @@ use these Next.js access controls; do not deploy it with sensitive records.
   only students assigned to them.
 - `GET /api/admin/users`, `PATCH /api/admin/users`, and the administrator
   teacher and assignment routes support account approval and class assignment.
+- `GET /api/account` returns the signed-in user's name, email, and role;
+  `PATCH /api/account` updates only the name. `PUT /api/account/password`
+  takes `currentPassword` and `newPassword` and changes the password only when
+  the current one is correct. The `/account` page uses these routes.
 
 ## Course management
 
