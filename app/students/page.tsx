@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import "./students.css";
 import SearchFilter from "../../components/students/SearchFilter";
@@ -11,10 +11,11 @@ import {
   LoadingState,
 } from "../../components/students/Feedback";
 import { studentRequest } from "../../lib/studentApi";
+import type { Student } from "../../types/records";
 
 export default function StudentsPage() {
   const [query, setQuery] = useState("");
-  const [students, setStudents] = useState([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -27,7 +28,7 @@ export default function StudentsPage() {
       params.set("q", searchValue.trim());
     }
 
-    const { response, payload } = await studentRequest(
+    const { response, payload } = await studentRequest<Student[]>(
       `/api/students?${params.toString()}`,
     );
 
@@ -46,7 +47,7 @@ export default function StudentsPage() {
     loadStudents();
   }, []);
 
-  function handleSearch(event) {
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     loadStudents(query);
   }

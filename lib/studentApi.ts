@@ -1,4 +1,6 @@
-export async function studentRequest(path, options = {}) {
+import type { ApiResponse } from "../types/records";
+
+export async function studentRequest<T = unknown>(path: string, options: RequestInit = {}) {
   const headers = {
     "Content-Type": "application/json",
     ...(options.headers || {}),
@@ -9,7 +11,7 @@ export async function studentRequest(path, options = {}) {
     headers,
   });
 
-  let payload = null;
+  let payload: Partial<ApiResponse<T>>;
   try {
     payload = await response.json();
   } catch {

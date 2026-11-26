@@ -1,10 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import FormField from "../students/FormField";
 import { ErrorMessage } from "../students/Feedback";
+import type { Course } from "../../types/records";
 
-export default function CourseForm({ initialCourse, onSubmit }) {
+interface CourseValues {
+  code: string;
+  name: string;
+  description: string;
+}
+
+interface CourseFormProps {
+  initialCourse?: Pick<Course, "code" | "name" | "description">;
+  onSubmit: (data: { name: string; description: string; code?: string }) => Promise<void>;
+}
+
+export default function CourseForm({ initialCourse, onSubmit }: CourseFormProps) {
   const [values, setValues] = useState({
     code: initialCourse?.code || "",
     name: initialCourse?.name || "",
@@ -13,21 +25,24 @@ export default function CourseForm({ initialCourse, onSubmit }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  function update(field, value) {
+  function update(field: keyof CourseValues, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
     setError("");
   }
 
-  async function submit(event) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setBusy(true);
     try {
-      const data = { name: values.name.trim(), description: values.description.trim() };
+      const data: { name: string; description: string; code?: string } = {
+        name: values.name.trim(),
+        description: values.description.trim(),
+      };
       if (!initialCourse) data.code = values.code.trim();
       await onSubmit(data);
     } catch (submitError) {
-      setError(submitError.message || "Unable to save course.");
+      setError(submitError instanceof Error ? submitError.message : "Unable to save course.");
     } finally {
       setBusy(false);
     }

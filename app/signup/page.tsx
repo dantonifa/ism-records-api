@@ -1,23 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+
+interface RegistrationResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
 
 export default function SignupPage() {
   const [message, setMessage] = useState("");
 
-  async function submit(event) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     try {
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: form.get("name"), email: form.get("email"), password: form.get("password") }),
       });
-      const data = await response.json();
-      setMessage(response.ok ? data.message : data.error);
-      if (response.ok) event.target.reset();
+      const data: RegistrationResponse = await response.json();
+      if (response.ok && data.success && data.message) {
+        setMessage(data.message);
+        formElement.reset();
+      } else {
+        setMessage(data.error || "Unable to request an account.");
+      }
     } catch {
       setMessage("Unable to request an account. Please try again.");
     }

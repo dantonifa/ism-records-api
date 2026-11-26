@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [message, setMessage] = useState("");
 
-  async function submit(event) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     const form = new FormData(event.currentTarget);

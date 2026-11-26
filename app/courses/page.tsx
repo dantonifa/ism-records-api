@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { courseRequest } from "../../lib/courseApi";
 import { EmptyState, ErrorMessage, LoadingState } from "../../components/students/Feedback";
+import type { Course } from "../../types/records";
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [canManage, setCanManage] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -14,11 +15,11 @@ export default function CoursesPage() {
   useEffect(() => {
     async function load() {
       try {
-        const result = await courseRequest("/api/courses");
+        const result = await courseRequest<Course[]>("/api/courses");
         setCourses(result.data);
-        setCanManage(result.canManage);
+        setCanManage(result.canManage ?? false);
       } catch (loadError) {
-        setError(loadError.message || "Unable to load courses.");
+        setError(loadError instanceof Error ? loadError.message : "Unable to load courses.");
       } finally {
         setLoading(false);
       }

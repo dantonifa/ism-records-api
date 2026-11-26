@@ -23,6 +23,7 @@ build/
 
 # Coverage reports
 coverage/
+*.tsbuildinfo
 
 # VS Code settings
 .vscode/

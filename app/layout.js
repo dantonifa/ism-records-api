@@ -4,6 +4,7 @@ import "../public/styles/project-mobile.css";
 export const metadata = {
   title: "Instituto Privado Salvador Moncada",
   description: "Academic Records Management Platform",
+  icons: { icon: "/images/favicon.ico" },
 };
 
 export default function RootLayout({ children }) {

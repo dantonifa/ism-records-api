@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 
 export default function GradeEntryPage() {
@@ -61,7 +62,7 @@ export default function GradeEntryPage() {
       <Link className={styles.backLink} href="/">Back to home</Link>
       <div className={styles.card}>
         <div className={styles.brand}>
-          <img src="/images/ism-logo.webp" alt="" className={styles.logo} />
+          <Image src="/images/ism-logo.webp" alt="" width={42} height={48} className={styles.logo} />
           <div><p className={styles.school}>Instituto Salvador Moncada</p><p className={styles.brandSubtitle}>Academic records</p></div>
         </div>
         <div className={styles.content}>

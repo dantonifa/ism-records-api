@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import "../students/students.css";
 import { apiRequest } from "../../lib/apiRequest";
 import ConfirmDialog from "../../components/students/ConfirmDialog";
 import { EmptyState, ErrorMessage, LoadingState, SuccessMessage } from "../../components/students/Feedback";
+import type { Course, Enrollment, Student } from "../../types/records";
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Unable to complete the request.";
+}
 
 export default function EnrollmentsPage() {
-  const [enrollments, setEnrollments] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [studentId, setStudentId] = useState("");
   const [courseId, setCourseId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -18,13 +23,13 @@ export default function EnrollmentsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [archiveId, setArchiveId] = useState(null);
+  const [archiveId, setArchiveId] = useState<string | null>(null);
 
   async function load() {
     const [enrollmentResult, studentResult, courseResult] = await Promise.all([
-      apiRequest("/api/enrollments"),
-      apiRequest("/api/students?status=active"),
-      apiRequest("/api/courses"),
+      apiRequest<Enrollment[]>("/api/enrollments"),
+      apiRequest<Student[]>("/api/students?status=active"),
+      apiRequest<Course[]>("/api/courses"),
     ]);
     setEnrollments(enrollmentResult.data);
     setStudents(studentResult.data);
@@ -33,10 +38,10 @@ export default function EnrollmentsPage() {
   }
 
   useEffect(() => {
-    load().catch((loadError) => setError(loadError.message)).finally(() => setLoading(false));
+    load().catch((loadError: unknown) => setError(errorMessage(loadError))).finally(() => setLoading(false));
   }, []);
 
-  async function create(event) {
+  async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setError("");
@@ -52,16 +57,16 @@ export default function EnrollmentsPage() {
       try {
         await load();
       } catch (refreshError) {
-        setError(`Enrollment created, but refreshing failed: ${refreshError.message}`);
+        setError(`Enrollment created, but refreshing failed: ${errorMessage(refreshError)}`);
       }
     } catch (requestError) {
-      setError(requestError.message);
+      setError(errorMessage(requestError));
     } finally {
       setBusy(false);
     }
   }
 
-  async function changeStatus(id, restore) {
+  async function changeStatus(id: string, restore: boolean) {
     setBusy(true);
     setError("");
     setSuccess("");
@@ -74,11 +79,11 @@ export default function EnrollmentsPage() {
       try {
         await load();
       } catch (refreshError) {
-        setError(`Enrollment updated, but refreshing failed: ${refreshError.message}`);
+        setError(`Enrollment updated, but refreshing failed: ${errorMessage(refreshError)}`);
       }
     } catch (requestError) {
       setArchiveId(null);
-      setError(requestError.message);
+      setError(errorMessage(requestError));
     } finally {
       setBusy(false);
     }
@@ -146,7 +151,7 @@ export default function EnrollmentsPage() {
           </>
         )}
       </section>
-      <ConfirmDialog open={Boolean(archiveId)} title="Archive enrollment?" message="The enrollment can be restored later if the student and course are active." confirmLabel="Archive" busy={busy} onConfirm={() => changeStatus(archiveId, false)} onCancel={() => setArchiveId(null)} />
+      <ConfirmDialog open={Boolean(archiveId)} title="Archive enrollment?" message="The enrollment can be restored later if the student and course are active." confirmLabel="Archive" busy={busy} onConfirm={() => { if (archiveId) changeStatus(archiveId, false); }} onCancel={() => setArchiveId(null)} />
     </main>
   );
 }

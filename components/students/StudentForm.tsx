@@ -1,10 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import FormField from "./FormField";
 import { ErrorMessage, SuccessMessage } from "./Feedback";
 
-const INITIAL = {
+interface StudentFormValues {
+  studentId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gradeLevel: string;
+  section: string;
+  year: string;
+}
+
+type StudentInput = Omit<StudentFormValues, "studentId" | "year"> & {
+  studentId?: string;
+  year: number;
+};
+
+interface StudentFormProps {
+  mode?: "create" | "edit";
+  initialValues?: Partial<StudentFormValues>;
+  onSubmit: (payload: StudentInput) => Promise<{ ok: boolean; message?: string }>;
+  submitLabel?: string;
+}
+
+const INITIAL: StudentFormValues = {
   studentId: "",
   firstName: "",
   lastName: "",
@@ -15,8 +38,8 @@ const INITIAL = {
   year: String(new Date().getFullYear()),
 };
 
-function validateClient(values, { includeStudentId }) {
-  const errors = {};
+function validateClient(values: StudentFormValues, { includeStudentId }: { includeStudentId: boolean }) {
+  const errors: Partial<Record<keyof StudentFormValues, string>> = {};
 
   if (includeStudentId && !values.studentId.trim()) {
     errors.studentId = "Student ID is required.";
@@ -50,24 +73,24 @@ export default function StudentForm({
   initialValues,
   onSubmit,
   submitLabel,
-}) {
-  const [values, setValues] = useState({
+}: StudentFormProps) {
+  const [values, setValues] = useState<StudentFormValues>({
     ...INITIAL,
     ...(initialValues || {}),
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Partial<Record<keyof StudentFormValues, string>>>({});
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState("");
   const [busy, setBusy] = useState(false);
 
-  function updateField(field, value) {
+  function updateField(field: keyof StudentFormValues, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
     setFormError("");
     setSuccess("");
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors = validateClient(values, {
       includeStudentId: mode === "create",
@@ -83,7 +106,7 @@ export default function StudentForm({
     setSuccess("");
 
     try {
-      const payload = {
+      const payload: StudentInput = {
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
         email: values.email.trim(),
@@ -108,7 +131,7 @@ export default function StudentForm({
         setValues({ ...INITIAL, year: String(new Date().getFullYear()) });
       }
     } catch (error) {
-      setFormError(error.message || "Unable to save student profile.");
+      setFormError(error instanceof Error ? error.message : "Unable to save student profile.");
     } finally {
       setBusy(false);
     }

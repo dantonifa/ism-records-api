@@ -20,7 +20,7 @@ server with static pages under `public/`.
 ## Technology
 
 - Next.js App Router and React
-- TypeScript strict mode for the target application
+- JavaScript and TypeScript with strict checking for TypeScript files
 - MongoDB with Mongoose
 - Responsive CSS/Tailwind design direction
 - Vercel for the current Next.js deployment
@@ -43,6 +43,8 @@ Obtain both securely; do not commit credentials or tokens.
 The GitHub-connected Next.js app is deployed on Vercel at
 [ism-records-api.vercel.app](https://ism-records-api.vercel.app/). Configure
 `MONGODB_URI` and `AUTH_SECRET` securely in the appropriate Vercel environments.
+Deploy the Next.js application from the repository's `main` branch after review,
+and verify the deployment and its database connection before use.
 The older Express server is separate and references a Render deployment; do not
 assume it shares the Next.js deployment or its access controls.
 
@@ -61,6 +63,17 @@ change does not deactivate previously stored accounts automatically. The admin
 page can then approve accounts, link teacher accounts to teacher records, and
 assign classes and students. The legacy Express server is separate and does not
 use these Next.js access controls; do not deploy it with sensitive records.
+
+## Student and account API
+
+- `POST /api/register` requests an inactive account. Authentication uses
+  Auth.js credentials; an administrator must approve the account before login.
+- `GET /api/students` lists active students; `POST /api/students` creates one.
+- `GET /api/students/:id` reads a profile; `PATCH` updates it and `DELETE`
+  archives it. Staff and administrators manage students; teachers can view
+  only students assigned to them.
+- `GET /api/admin/users`, `PATCH /api/admin/users`, and the administrator
+  teacher and assignment routes support account approval and class assignment.
 
 ## Course management
 
@@ -109,6 +122,38 @@ requires MongoDB transaction support (a replica set or sharded cluster).
 The grade-review integration test runs when `GRADE_REVIEW_MONGO_TEST_URI` points
 to an isolated local MongoDB replica set. It creates and removes a uniquely named
 test database; the standard test run skips it when the variable is unset.
+
+## Demo and access
+
+Instituto Salvador Moncada Records helps school staff organize student
+profiles, courses, enrollments, and academic records in one application.
+Administrators, teachers, and staff have different responsibilities, so
+account approval and role-based access help limit who can see or change
+information.
+
+In a demo, an administrator approves a requested account, creates a course,
+and assigns a teacher. Staff can create a student profile and enroll the
+student in a course; an assigned teacher can submit grades for staff review.
+The workflow keeps submitted grades pending until an authorized reviewer
+approves them.
+
+Before a demo, configure the deployment and provision approved demo accounts
+for the roles being demonstrated. Use fictional student information and share
+temporary credentials securely with the grader; do not put credentials in the
+repository. Tell the grader the application uses Auth.js v5 and provide the
+deployment URL and role-specific steps needed to access the demo.
+
+## Known issues and opportunities
+
+- TypeScript coverage is partial: the app still contains JavaScript files, and
+  the remaining pages, components, and APIs have not all been migrated.
+- Live authentication, database indexes, and the complete deployment workflow
+  need verification in the target environment.
+- Course records are not linked to grade assignments, and archiving a student
+  or course does not automatically archive its enrollments.
+- Grade review requires MongoDB transaction support. The integration test
+  requires an isolated local replica set and is skipped without one.
+- The legacy Express server does not share the Next.js access controls.
 
 ## Project resources
 
