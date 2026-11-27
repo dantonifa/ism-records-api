@@ -31,6 +31,7 @@ export default function HomeNavigation() {
           <li><Link href="/signup">REQUEST ACCOUNT</Link></li>
           <li><Link href="/grades/entry">GRADES</Link></li>
           <li><Link href="/grades/review">REVIEW GRADES</Link></li>
+          <li><Link href="/account">ACCOUNT</Link></li>
           <li><Link href="/admin">ADMIN</Link></li>
           <li><SignOutButton /></li>
         </ul>
