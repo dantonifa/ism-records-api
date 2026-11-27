@@ -8,7 +8,10 @@ import styles from "./page.module.css";
 export default function GradeEntryPage() {
   const [assignments, setAssignments] = useState([]);
   const [selected, setSelected] = useState("");
+  const [operation, setOperation] = useState("set");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -19,6 +22,8 @@ export default function GradeEntryPage() {
         setAssignments(data.data);
       } catch (error) {
         setMessage(error.message || "Unable to load assignments.");
+      } finally {
+        setLoading(false);
       }
     }
     load();
@@ -32,6 +37,8 @@ export default function GradeEntryPage() {
       setMessage("Select an assigned class.");
       return;
     }
+    setBusy(true);
+    setMessage("");
     try {
       const response = await fetch("/api/grades/submit", {
         method: "POST",
@@ -43,16 +50,19 @@ export default function GradeEntryPage() {
           term: form.get("term"),
           grades: [{
             studentId: form.get("studentId"),
-            score: Number(form.get("score")),
+            operation,
+            ...(operation === "set" ? { score: Number(form.get("score")) } : {}),
             comments: form.get("comments"),
           }],
         }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      setMessage("Grade submitted for review.");
+      setMessage("Grade request submitted for review.");
     } catch (error) {
       setMessage(error.message || "Unable to submit the grade.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -69,8 +79,10 @@ export default function GradeEntryPage() {
           <div className={styles.intro}>
             <p className={styles.eyebrow}>Teacher workspace</p>
             <h1>Grade entry</h1>
-            <p>Submit a grade for review. Contact an administrator if your class is not assigned.</p>
+            <p>Submit a grade, correction, or removal request for review. Contact an administrator if your class is not assigned.</p>
           </div>
+          {loading && <p>Loading assigned classes...</p>}
+          {!loading && !assignments.length && !message && <p>No classes assigned.</p>}
           <form className={styles.form} onSubmit={submit}>
             <label className={styles.field}>Assigned class
               <select value={selected} onChange={(event) => setSelected(event.target.value)} required>
@@ -89,9 +101,15 @@ export default function GradeEntryPage() {
                 {["Q1", "Q2", "Q3", "Q4"].map((term) => <option key={term} value={term}>{term}</option>)}
               </select>
             </label>
-            <label className={styles.field}>Score <input name="score" type="number" min="0" max="100" step="any" required /></label>
+            <label className={styles.field}>Request
+              <select value={operation} onChange={(event) => setOperation(event.target.value)}>
+                <option value="set">Enter or correct a grade</option>
+                <option value="remove">Remove an existing grade</option>
+              </select>
+            </label>
+            {operation === "set" && <label className={styles.field}>Score <input name="score" type="number" min="0" max="100" step="any" required /></label>}
             <label className={styles.field}>Comments <textarea name="comments" rows="3" /></label>
-            <div className={styles.actions}><button type="submit">Submit grade</button></div>
+            <div className={styles.actions}><button type="submit" disabled={loading || busy || !assignments.length}>{busy ? "Submitting..." : "Submit request"}</button></div>
           </form>
           <p role="status" aria-live="polite">{message}</p>
         </div>

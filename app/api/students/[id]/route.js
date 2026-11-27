@@ -26,7 +26,10 @@ export async function GET(request, { params }) {
       );
     }
 
-    return NextResponse.json({ success: true, data: student }, { status: 200 });
+    return NextResponse.json(
+      { success: true, data: student, canManage: auth.user.role === "admin", canViewHistory: auth.user.role !== "teacher" },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error fetching student:", error);
     return NextResponse.json(
@@ -37,7 +40,7 @@ export async function GET(request, { params }) {
 }
 
 export async function PATCH(request, { params }) {
-  const auth = await authorize(["admin", "staff"]);
+  const auth = await authorize(["admin"]);
   if (auth.response) {
     return auth.response;
   }
@@ -89,7 +92,7 @@ export async function PATCH(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const auth = await authorize(["admin", "staff"]);
+  const auth = await authorize(["admin"]);
   if (auth.response) {
     return auth.response;
   }

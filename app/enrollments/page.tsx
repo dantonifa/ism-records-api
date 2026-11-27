@@ -20,6 +20,7 @@ export default function EnrollmentsPage() {
   const [courseId, setCourseId] = useState("");
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
+  const [canManage, setCanManage] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -32,6 +33,7 @@ export default function EnrollmentsPage() {
       apiRequest<Course[]>("/api/courses"),
     ]);
     setEnrollments(enrollmentResult.data);
+    setCanManage(enrollmentResult.canManage === true);
     setStudents(studentResult.data);
     setCourses(courseResult.data);
     setReady(true);
@@ -130,18 +132,18 @@ export default function EnrollmentsPage() {
             {enrollments.length > 0 && (
               <div className="student-table-wrap">
                 <table className="student-table">
-                  <thead><tr><th>Student</th><th>Course</th><th>Status</th><th>Action</th></tr></thead>
+                  <thead><tr><th>Student</th><th>Course</th><th>Status</th>{canManage && <th>Action</th>}</tr></thead>
                   <tbody>
                     {enrollments.map((enrollment) => (
                       <tr key={enrollment._id}>
                         <td>{enrollment.student ? `${enrollment.student.lastName}, ${enrollment.student.firstName} (${enrollment.student.studentId})${enrollment.student.status !== "active" ? " — archived" : ""}` : "Student unavailable"}</td>
                         <td>{enrollment.course ? `${enrollment.course.code} — ${enrollment.course.name}${enrollment.course.status !== "active" ? " — archived" : ""}` : "Course unavailable"}</td>
                         <td>{enrollment.status}</td>
-                        <td className="student-inline-actions">
+                        {canManage && <td className="student-inline-actions">
                           {enrollment.status === "active"
                             ? <button type="button" className="student-danger" disabled={busy} onClick={() => setArchiveId(enrollment._id)}>Archive</button>
                             : <button type="button" disabled={busy} onClick={() => changeStatus(enrollment._id, true)}>Restore</button>}
-                        </td>
+                        </td>}
                       </tr>
                     ))}
                   </tbody>

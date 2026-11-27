@@ -10,7 +10,7 @@ const submissionFields = new Set([
   "grades",
 ]);
 
-const gradeFields = new Set(["studentId", "score", "comments"]);
+const gradeFields = new Set(["studentId", "score", "comments", "operation"]);
 
 function validateGradeSubmission(body) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -42,7 +42,14 @@ function validateGradeSubmission(body) {
       return { error: `Unexpected grade field: ${unexpectedGradeField}` };
     }
 
-    if (typeof grade.score !== "number" || !Number.isFinite(grade.score)) {
+    if (grade.operation !== undefined && !["set", "remove"].includes(grade.operation)) {
+      return { error: "Each grade operation must be set or remove" };
+    }
+    if (grade.operation === "remove" && grade.score !== undefined) {
+      return { error: "A removal request must not include a score" };
+    }
+    if (grade.operation !== "remove" &&
+        (typeof grade.score !== "number" || !Number.isFinite(grade.score))) {
       return { error: "Each grade score must be a valid number" };
     }
   }

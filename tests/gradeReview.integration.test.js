@@ -15,9 +15,12 @@ test("batch approval rolls back all writes on a real MongoDB transaction", { ski
   const mongoose = require("mongoose");
   const GradeSubmission = require("../models/GradeSubmission");
   const Record = require("../models/record");
+  const Student = require("../models/Student");
+  const Course = require("../models/Course");
+  const Enrollment = require("../models/Enrollment");
   const { dbConnect } = await import("../lib/db.js");
   const { createBatchApprovalHandler } = await import("../lib/gradeReview.js");
-  const approve = createBatchApprovalHandler(async () => true);
+  const approve = createBatchApprovalHandler(async () => ({ _id: new mongoose.Types.ObjectId() }));
   const teacherId = new mongoose.Types.ObjectId();
 
   function request(ids) {
@@ -36,15 +39,21 @@ test("batch approval rolls back all writes on a real MongoDB transaction", { ski
 
   try {
     await dbConnect();
+    const course = await Course.create({ code: "MATH", name: "Mathematics" });
+    const students = await Student.create(["test-student-a", "test-student-b"].map((studentId) => ({
+      studentId, firstName: "Test", lastName: "Student", email: `${studentId}@example.test`,
+      section: "A", year: 2026, gradeLevel: "10",
+    })));
+    await Enrollment.create({ student: students[0]._id, course: course._id });
     const firstRecord = await Record.create(record("test-student-a"));
     const submissions = await GradeSubmission.create([
       {
         teacherId, subjectId: "math", courseSection: "A", term: "Q1", year: 2026,
-        grades: [{ studentId: "test-student-a", score: 85 }],
+        grades: [{ studentId: "test-student-a", score: 85, expectedScore: 0 }],
       },
       {
         teacherId, subjectId: "math", courseSection: "A", term: "Q1", year: 2026,
-        grades: [{ studentId: "test-student-b", score: 90 }],
+        grades: [{ studentId: "test-student-b", score: 90, expectedScore: 0 }],
       },
     ]);
     const ids = submissions.map(({ _id }) => _id);
@@ -57,6 +66,7 @@ test("batch approval rolls back all writes on a real MongoDB transaction", { ski
     );
 
     const secondRecord = await Record.create(record("test-student-b"));
+    await Enrollment.create({ student: students[1]._id, course: course._id });
     assert.equal((await approve(request(ids))).status, 200);
     assert.equal((await Record.findById(firstRecord._id)).grades.parcial1, 85);
     assert.equal((await Record.findById(secondRecord._id)).grades.parcial1, 90);

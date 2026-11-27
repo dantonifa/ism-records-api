@@ -116,7 +116,13 @@ export default function GradeReviewPage() {
           </label>
           <h2>{submission.subjectId} — {submission.courseSection}, {submission.term}</h2>
           <p>Teacher database ID: {submission.teacherId}</p>
-          <ul>{submission.grades.map((grade) => <li key={grade.studentId}>{grade.studentId}: {grade.score}{grade.comments ? ` — ${grade.comments}` : ""}</li>)}</ul>
+          <ul>{submission.grades.map((grade) => (
+            <li key={grade.studentId}>
+              {grade.studentId}: {grade.operation === "remove" ? "Remove grade" : `Set grade to ${grade.score}`}
+              {grade.expectedScore !== undefined && ` (current grade: ${grade.expectedScore ?? "not graded"})`}
+              {grade.comments ? ` — ${grade.comments}` : ""}
+            </li>
+          ))}</ul>
           <form onSubmit={(event) => review(event, submission, "approve")}>
             <label>Year <input name="year" type="number" min="1" defaultValue={submission.year || ""} required /></label>
             <button type="submit">Approve</button>

@@ -100,7 +100,7 @@ export default function AdminPage() {
           <label>Teacher <select name="teacherId" required defaultValue=""><option value="">Choose</option>
             {teachers.map((teacher) => <option key={teacher._id} value={teacher._id}>{teacher.name} ({teacher.teacherId})</option>)}
           </select></label>
-          <label>Subject <input name="subjectId" required /></label>
+          <label>Course code <input name="subjectId" required /></label>
           <label>Section <input name="courseSection" required /></label>
           <label>Year <input name="year" type="number" min="2000" max="2100" required /></label>
           <label>Student IDs <textarea name="studentIds" required /></label>

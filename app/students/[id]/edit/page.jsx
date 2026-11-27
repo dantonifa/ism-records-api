@@ -35,6 +35,13 @@ export default function EditStudentPage() {
         return;
       }
 
+      if (!payload.canManage) {
+        setError("Administrator access is required to edit student profiles.");
+        setStudent(null);
+        setLoading(false);
+        return;
+      }
+
       setStudent(payload.data);
       setLoading(false);
     }

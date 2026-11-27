@@ -18,6 +18,8 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [canManage, setCanManage] = useState(false);
+  const [canCreate, setCanCreate] = useState(false);
 
   async function loadStudents(searchValue = "") {
     setLoading(true);
@@ -40,6 +42,8 @@ export default function StudentsPage() {
     }
 
     setStudents(payload.data || []);
+    setCanManage(payload.canManage === true);
+    setCanCreate(payload.canCreate === true);
     setLoading(false);
   }
 
@@ -64,9 +68,11 @@ export default function StudentsPage() {
             <h1>Students</h1>
             <p>Search, browse, and manage student profiles.</p>
           </div>
-          <div className="student-actions">
-            <Link href="/students/new">Add student</Link>
-          </div>
+          {canCreate && (
+            <div className="student-actions">
+              <Link href="/students/new">Add student</Link>
+            </div>
+          )}
         </div>
 
         <SearchFilter
@@ -84,7 +90,7 @@ export default function StudentsPage() {
         ) : null}
 
         {!loading && students.length > 0 ? (
-          <StudentTable students={students} />
+          <StudentTable students={students} canManage={canManage} />
         ) : null}
       </section>
     </main>

@@ -13,12 +13,22 @@ const gradeSubmissionSchema = new mongoose.Schema({
   },
   submittedAt: { type: Date, default: Date.now },
   approvedAt: { type: Date },
+  reviewedAt: { type: Date },
+  reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   rejectionReason: { type: String },
   grades: [
     {
       studentId: { type: String, required: true },
-      score: { type: Number, required: true, min: 0, max: 100 },
+      operation: { type: String, enum: ["set", "remove"], default: "set" },
+      score: {
+        type: Number,
+        required() { return this.operation !== "remove"; },
+        min: 0,
+        max: 100,
+      },
       comments: { type: String },
+      expectedScore: { type: Number, default: undefined },
+      previousScore: { type: Number, default: undefined },
     },
   ],
 });

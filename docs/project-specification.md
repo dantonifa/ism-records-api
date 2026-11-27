@@ -14,7 +14,7 @@ The initial release focuses on account access, role-based permissions, student a
 1. As a staff member, I want to create an account and sign in so that I can access the application according to my assigned role.
 2. As an administrator, I want to manage user roles so that only authorized people can access or modify student records.
 3. As an authorized staff member, I want to create and view student profiles so that I can maintain and find student information.
-4. As an authorized staff member, I want to update and delete student profiles so that student records remain accurate and can be removed when appropriate.
+4. As an administrator, I want to update and archive student profiles so that student records remain accurate and can be removed from normal use.
 5. As an administrator, I want to create, view, update, and delete courses so that the course catalog stays current.
 6. As an authorized staff member, I want to manage student enrollments so that each student's courses are recorded accurately.
 7. As an authorized teacher, I want to record and manage grades so that student academic performance is documented.
@@ -43,8 +43,8 @@ The initial release focuses on account access, role-based permissions, student a
 
 ### Story 4: Update and delete student profiles
 
-- Given an authorized staff member, when they submit valid changes to a student profile, then the system saves and displays those changes.
-- Given an authorized staff member, when they confirm the removal of a student profile, then the system removes it from normal use.
+- Given an administrator, when they submit valid changes to a student profile, then the system saves and displays those changes.
+- Given an administrator, when they confirm the removal of a student profile, then the system archives it from normal use.
 - Given a user without permission, when they attempt to update or delete a profile, then the system denies the request.
 
 ### Story 5: Manage courses
@@ -57,13 +57,14 @@ The initial release focuses on account access, role-based permissions, student a
 
 - Given an authorized staff member, when they enroll a student in a course, then the system saves the enrollment and displays it in the student's records.
 - Given an existing enrollment for the same student and course, when another identical enrollment is submitted, then the system rejects the duplicate.
-- Given an authorized staff member, when they view, update, or remove an enrollment, then the system displays it or saves the requested change.
+- Given an authorized staff member, when they view an enrollment, then the system displays it.
+- Given an administrator, when they update or archive an enrollment, then the system saves the requested change.
 
 ### Story 7: Manage grades
 
-- Given an authorized teacher, when they enter a valid grade for an enrollment, then the system saves and displays the grade.
+- Given an authorized teacher, when they enter a valid grade for an enrollment, then the system saves a request for staff review and displays the grade after approval.
 - Given an invalid grade, when the teacher submits it, then the system displays a validation message and does not save it.
-- Given an authorized teacher, when they view, update, or remove a grade, then the system displays it or saves the requested change.
+- Given an authorized teacher, when they request a correction or removal, staff or administrators review it before the current grade changes, and the reviewed request is retained.
 - Given a user without permission, when they attempt to modify a grade, then the system denies the request.
 
 ### Story 8: View academic history
@@ -99,7 +100,7 @@ The initial release focuses on account access, role-based permissions, student a
 - `GET /api/grades/:id`, `PATCH /api/grades/:id`, and `DELETE /api/grades/:id` — view, update, and remove a grade.
 - Authentication and session endpoints will follow the selected authentication provider.
 
-All record endpoints require appropriate authentication and authorization. The team will decide whether removal is implemented as a soft delete and how related records are retained.
+All record endpoints require appropriate authentication and authorization. Student profiles, enrollments, and academic records are archived rather than permanently deleted. Grade writes create requests for staff review; they do not immediately alter approved grades.
 
 ## Implementation Priority
 

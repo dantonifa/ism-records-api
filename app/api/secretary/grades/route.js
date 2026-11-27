@@ -3,5 +3,5 @@ import { createPendingGradesHandler } from "../../../../lib/gradeReview.js";
 
 export const GET = createPendingGradesHandler(async () => {
   const access = await authorize(["admin", "staff"]);
-  return access.response || true;
+  return access.response || access.user;
 });
