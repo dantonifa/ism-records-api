@@ -1,0 +1,203 @@
+.ism-navbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: #c8f7f5; /* Matches your header palette */
+  padding: 0.4rem 1rem;
+  z-index: 1000;
+}
+
+.ism-mobile-toggle {
+  display: none;
+  background: #0f3d3e;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.ism-nav-list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ism-nav-item {
+  position: relative;
+}
+
+.ism-nav-link,
+.ism-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.95rem;
+  font-family: "Lato", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #0b2e2f;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ism-nav-link:hover,
+.ism-dropdown-trigger:hover,
+.ism-nav-link:focus-visible,
+.ism-dropdown-trigger:focus-visible {
+  background-color: #0f3d3e;
+  color: #ffffff;
+  outline: none;
+}
+
+.ism-nav-link.is-active,
+.ism-dropdown-trigger.is-active {
+  border-bottom-color: #0f3d3e;
+}
+
+.ism-chevron {
+  font-size: 0.8rem;
+  transition: transform 0.15s ease;
+}
+
+.ism-dropdown.is-open .ism-chevron {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Folder Panel */
+.ism-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 195px;
+  background-color: #ffffff;
+  border: 1px solid #b8e2e0;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  z-index: 1100;
+}
+
+.ism-dropdown-menu[hidden] {
+  display: none;
+}
+
+/* Align Account dropdown to the right edge so it never overflows the viewport */
+.ism-nav-item:last-child .ism-dropdown-menu {
+  left: auto;
+  right: 0;
+}
+
+.ism-dropdown-item {
+  width: 100%;
+}
+
+.ism-dropdown-divider {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.ism-dropdown-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.8rem;
+  font-family: "Lato", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ism-dropdown-link:hover,
+.ism-dropdown-link:focus-visible {
+  background-color: #e6f7f6;
+  color: #0f3d3e;
+  outline: none;
+}
+
+.ism-dropdown-link.is-active {
+  background-color: #0f3d3e;
+  color: #ffffff;
+}
+
+.ism-signout-btn {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.ism-signout-btn:hover,
+.ism-signout-btn:focus-visible {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Mobile Responsive Accordion */
+@media (max-width: 820px) {
+  .ism-navbar {
+    justify-content: flex-end;
+  }
+
+  .ism-mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ism-nav-list {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border-bottom: 2px solid #b8e2e0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    gap: 0.25rem;
+  }
+
+  .ism-nav-list.is-open {
+    display: flex;
+  }
+
+  .ism-nav-link,
+  .ism-dropdown-trigger {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ism-dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    border-left: 3px solid #0f3d3e;
+    border-radius: 0;
+    margin: 0.25rem 0 0.5rem 0.75rem;
+    padding: 0.25rem 0 0.25rem 0.5rem;
+  }
+}
