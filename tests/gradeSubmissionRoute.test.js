@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 process.env.MONGODB_URI ??= "mongodb://127.0.0.1:27017/ism-test";
 const GradeSubmission = require("../models/GradeSubmission");
 const Student = require("../models/Student");
+const Course = require("../models/Course");
+const Enrollment = require("../models/Enrollment");
+const Record = require("../models/record");
 
 function request(body) {
   return new Request("http://localhost/api/grades/submit", {
@@ -33,7 +36,12 @@ test("grade submission requires a teacher and an assigned roster", async (t) => 
   t.mock.method(TeachingAssignment, "findOne", () => ({
     lean: async () => assigned ? { studentIds: ["student-1"] } : null,
   }));
-  t.mock.method(Student, "countDocuments", async () => 1);
+  t.mock.method(Student, "find", () => ({ lean: async () => [{ _id: new mongoose.Types.ObjectId() }] }));
+  t.mock.method(Course, "findOne", () => ({ lean: async () => ({ _id: new mongoose.Types.ObjectId() }) }));
+  let enrolled = true;
+  let existingRecords = [];
+  t.mock.method(Enrollment, "find", () => ({ lean: async () => enrolled ? [{}] : [] }));
+  t.mock.method(Record, "find", () => ({ lean: async () => existingRecords }));
   const save = t.mock.method(GradeSubmission.prototype, "save", async function () { return this; });
 
   assert.equal((await submit(request(payload))).status, 403);
@@ -44,5 +52,15 @@ test("grade submission requires a teacher and an assigned roster", async (t) => 
   const result = await response.json();
   assert.equal(result.data.teacherId, String(teacherId));
   assert.equal(result.data.grades[0].comments, "Good work");
+  assert.equal(result.data.grades[0].expectedScore, null);
   assert.equal(result.data.status, "PENDING_REVIEW");
+  enrolled = false;
+  assert.equal((await submit(request(payload))).status, 409);
+  enrolled = true;
+  const removal = { ...payload, grades: [{ studentId: "student-1", operation: "remove" }] };
+  assert.equal((await submit(request(removal))).status, 409);
+  existingRecords = [{ studentId: "student-1", grades: { parcial1: 0 } }];
+  const removed = await submit(request(removal));
+  assert.equal(removed.status, 201);
+  assert.equal((await removed.json()).data.grades[0].expectedScore, 0);
 });

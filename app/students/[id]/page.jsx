@@ -23,8 +23,14 @@ export default function StudentDetailPage() {
   const [success, setSuccess] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [canManage, setCanManage] = useState(false);
+  const [history, setHistory] = useState(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState("");
 
   useEffect(() => {
+    let active = true;
+
     async function loadStudent() {
       if (!studentId) {
         return;
@@ -32,10 +38,25 @@ export default function StudentDetailPage() {
 
       setLoading(true);
       setError("");
-      const { response, payload } = await studentRequest(
-        `/api/students/${encodeURIComponent(studentId)}`,
-      );
+      setStudent(null);
+      setCanManage(false);
+      setHistory(null);
+      setHistoryError("");
+      setHistoryLoading(false);
+      let response, payload;
+      try {
+        ({ response, payload } = await studentRequest(
+          `/api/students/${encodeURIComponent(studentId)}`,
+        ));
+      } catch {
+        if (!active) return;
+        setStudent(null);
+        setError("Unable to load the student profile. Check your connection.");
+        setLoading(false);
+        return;
+      }
 
+      if (!active) return;
       if (!response.ok || !payload.success) {
         setStudent(null);
         setError(payload.message || "Student profile not found.");
@@ -44,10 +65,25 @@ export default function StudentDetailPage() {
       }
 
       setStudent(payload.data);
+      setCanManage(payload.canManage === true);
       setLoading(false);
+      if (payload.canViewHistory) {
+        setHistoryLoading(true);
+        try {
+          const result = await studentRequest(`/api/students/${encodeURIComponent(studentId)}/history`);
+          if (!active) return;
+          if (result.response.ok && result.payload.success) setHistory(result.payload.data);
+          else setHistoryError(result.payload.message || "Unable to load academic history.");
+        } catch {
+          if (active) setHistoryError("Unable to load academic history. Check your connection.");
+        } finally {
+          if (active) setHistoryLoading(false);
+        }
+      }
     }
 
     loadStudent();
+    return () => { active = false; };
   }, [studentId]);
 
   async function archiveStudent() {
@@ -55,21 +91,23 @@ export default function StudentDetailPage() {
     setError("");
     setSuccess("");
 
-    const { response, payload } = await studentRequest(
-      `/api/students/${encodeURIComponent(studentId)}`,
-      { method: "DELETE" },
-    );
-
-    setBusy(false);
-    setConfirmOpen(false);
-
-    if (!response.ok || !payload.success) {
-      setError(payload.message || "Unable to remove student profile.");
-      return;
+    try {
+      const { response, payload } = await studentRequest(
+        `/api/students/${encodeURIComponent(studentId)}`,
+        { method: "DELETE" },
+      );
+      if (!response.ok || !payload.success) {
+        setError(payload.message || "Unable to remove student profile.");
+        return;
+      }
+      setSuccess(payload.message || "Student profile removed from normal use.");
+      setStudent(payload.data);
+    } catch {
+      setError("Unable to remove student profile. Check your connection.");
+    } finally {
+      setBusy(false);
+      setConfirmOpen(false);
     }
-
-    setSuccess(payload.message || "Student profile removed from normal use.");
-    setStudent(payload.data);
   }
 
   return (
@@ -84,7 +122,7 @@ export default function StudentDetailPage() {
             <h1>Student profile</h1>
             <p>View identity, contact, and academic placement details.</p>
           </div>
-          {student ? (
+          {student && canManage ? (
             <div className="student-actions">
               <a href={`/students/${student.studentId}/edit`}>Edit</a>
               {student.status === "active" ? (
@@ -155,6 +193,38 @@ export default function StudentDetailPage() {
           </>
         ) : null}
       </section>
+
+      {student && (historyLoading || historyError || history) ? (
+        <section className="student-panel">
+          <h2>Academic history</h2>
+          {historyLoading ? <LoadingState message="Loading academic history..." /> : null}
+          <ErrorMessage message={historyError} />
+          {history ? (
+            <>
+              {history.enrollments.length === 0 && history.records.length === 0 ? <p>No enrollments or grades recorded.</p> : null}
+              {history.enrollments.length > 0 ? (
+                <>
+                  <h3>Enrollments</h3>
+                  <ul>{history.enrollments.map((enrollment) => (
+                    <li key={enrollment._id}>{enrollment.course ? `${enrollment.course.code} — ${enrollment.course.name}` : "Course unavailable"} ({enrollment.status})</li>
+                  ))}</ul>
+                </>
+              ) : null}
+              {history.records.length > 0 ? (
+                <>
+                  <h3>Grades</h3>
+                  <ul>{history.records.map((record) => (
+                    <li key={record._id}>
+                      {record.course} — {record.year}, {record.seccion}{record.status === "archived" ? " (archived)" : ""}
+                      {" — "}{["parcial1", "parcial2", "parcial3", "parcial4"].map((key, index) => `Q${index + 1}: ${record.grades?.[key] ?? "Not graded"}`).join(", ")}
+                    </li>
+                  ))}</ul>
+                </>
+              ) : null}
+            </>
+          ) : null}
+        </section>
+      ) : null}
 
       <ConfirmDialog
         open={confirmOpen}

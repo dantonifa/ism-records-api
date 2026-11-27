@@ -45,6 +45,8 @@ test("enrollment access is limited to active staff and administrators", async (t
   isActive = false;
   assert.equal((await handlers.list()).status, 403);
   isActive = true;
+  assert.equal((await handlers.update(request("PATCH", { status: "archived" }), context)).status, 403);
+  assert.equal((await handlers.archive(request("DELETE"), context)).status, 403);
   t.mock.method(mongoose, "connect", async () => mongoose);
   t.mock.method(Enrollment, "find", () => ({
     sort: () => ({ populate: () => ({ populate: () => ({ lean: async () => [] }) }) }),
@@ -94,7 +96,7 @@ test("creation validates active references and reports duplicate pairs", async (
 
 test("enrollment reads, archives, and restores with active reference validation", async (t) => {
   const { createEnrollmentHandlers } = await import("../lib/enrollmentHandlers.js");
-  const handlers = createEnrollmentHandlers(async () => ({ user: { role: "staff" } }));
+  const handlers = createEnrollmentHandlers(async () => ({ user: { role: "admin" } }));
   t.mock.method(mongoose, "connect", async () => mongoose);
   let studentActive = true;
   let courseActive = true;

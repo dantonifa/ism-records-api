@@ -80,6 +80,8 @@ export async function GET(request) {
         success: true,
         count: students.length,
         data: students,
+        canManage: auth.user.role === "admin",
+        canCreate: auth.user.role === "admin" || auth.user.role === "staff",
       },
       { status: 200 },
     );

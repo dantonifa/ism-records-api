@@ -1,6 +1,6 @@
 import type { Student } from "../../types/records";
 
-export default function StudentTable({ students }: { students: Student[] }) {
+export default function StudentTable({ students, canManage }: { students: Student[]; canManage: boolean }) {
   return (
     <div className="student-table-wrap">
       <table className="student-table">
@@ -26,8 +26,9 @@ export default function StudentTable({ students }: { students: Student[] }) {
               <td>{student.year}</td>
               <td>
                 <a href={`/students/${student.studentId}`}>View</a>
-                {" · "}
-                <a href={`/students/${student.studentId}/edit`}>Edit</a>
+                {canManage && (
+                  <>{" · "}<a href={`/students/${student.studentId}/edit`}>Edit</a></>
+                )}
               </td>
             </tr>
           ))}

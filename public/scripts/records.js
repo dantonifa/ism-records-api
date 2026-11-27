@@ -97,7 +97,18 @@ async function loadRecords() {
 // ==========================================================================
 // 2. LIFECYCLE INITIALIZATION AND EVENT LISTENERS
 // ==========================================================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch("/api/records");
+    const payload = await response.json();
+    if (!Array.isArray(payload)) {
+      initializeNextRecords(response, payload);
+      return;
+    }
+  } catch (error) {
+    initializeNextRecords(null, { message: "Unable to load records." });
+    return;
+  }
   const menuToggle = document.getElementById("menu-toggle");
   const menuList = document.getElementById("vertical-menu-list");
   const toggleIcon = document.getElementById("toggle-icon");

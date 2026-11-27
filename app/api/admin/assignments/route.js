@@ -4,6 +4,8 @@ import { authorize } from "../../../../lib/authorization.js";
 import TeachingAssignment from "../../../../models/TeachingAssignment.js";
 import Teacher from "../../../../models/teacher.js";
 import Student from "../../../../models/Student.js";
+import Course from "../../../../models/Course.js";
+import Enrollment from "../../../../models/Enrollment.js";
 
 const assignmentSchema = z.object({
   teacherId: z.string(),
@@ -36,26 +38,43 @@ export async function PUT(request) {
     if (!parsed.success || !mongoose.isObjectIdOrHexString(parsed.data.teacherId)) {
       return Response.json({ success: false, error: "Invalid assignment" }, { status: 400 });
     }
-    const { teacherId, subjectId, courseSection, year, studentIds } = parsed.data;
+    const { teacherId, courseSection, year, studentIds } = parsed.data;
+    const subjectId = parsed.data.subjectId.toUpperCase();
     if (new Set(studentIds).size !== studentIds.length) {
       return Response.json({ success: false, error: "Student IDs must be unique" }, { status: 400 });
     }
     if (!(await Teacher.exists({ _id: teacherId }))) {
       return Response.json({ success: false, error: "Teacher record not found" }, { status: 400 });
     }
-    const count = await Student.countDocuments({
+    const students = await Student.find({
       studentId: { $in: studentIds }, section: courseSection, year, status: "active",
-    });
-    if (count !== studentIds.length) {
+    }).lean();
+    if (students.length !== studentIds.length) {
       return Response.json({ success: false, error: "All students must belong to this section and year" }, { status: 400 });
     }
+    const course = await Course.findOne({ code: subjectId, status: "active" }).lean();
+    if (!course || await Enrollment.countDocuments({
+      student: { $in: students.map((student) => student._id) }, course: course._id, status: "active",
+    }) !== students.length) {
+      return Response.json({ success: false, error: "All students must be actively enrolled in this course code" }, { status: 400 });
+    }
+    const escapedCode = subjectId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const existing = await TeachingAssignment.find({
+      teacherId, subjectId: new RegExp(`^${escapedCode}$`, "i"), courseSection, year,
+    }).limit(2).lean();
+    if (existing.length > 1) {
+      return Response.json({ success: false, error: "Duplicate assignments require administrator attention" }, { status: 409 });
+    }
     const data = await TeachingAssignment.findOneAndUpdate(
-      { teacherId, subjectId, courseSection, year },
-      { $set: { studentIds } },
+      existing.length ? { _id: existing[0]._id } : { teacherId, subjectId, courseSection, year },
+      { $set: { teacherId, subjectId, courseSection, year, studentIds } },
       { upsert: true, new: true, runValidators: true },
     );
     return Response.json({ success: true, data });
   } catch (error) {
+    if (error.code === 11000) {
+      return Response.json({ success: false, error: "Assignment already exists" }, { status: 409 });
+    }
     if (error instanceof SyntaxError) {
       return Response.json({ success: false, error: "Invalid JSON" }, { status: 400 });
     }

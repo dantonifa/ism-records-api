@@ -32,4 +32,5 @@ export interface ApiResponse<T> {
   message?: string;
   error?: string;
   canManage?: boolean;
+  canCreate?: boolean;
 }
