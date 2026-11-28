@@ -12,7 +12,7 @@ const NAV_GROUPS = [
     items: [
       { label: "Discover", href: "/discover.html", externalStatic: true },
       { label: "Register", href: "/register.html", externalStatic: true },
-      { label: "Request Account", href: "/request-account" },
+      { label: "Request Account", href: "/signup" },
     ],
   },
   {
